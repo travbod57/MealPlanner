@@ -84,13 +84,12 @@ export class MealPlannerService {
   private readonly householdKey = 'default-household';
 
   constructor() {
-    this.loadSettings();
-
     if (this.firestoreEnabled) {
       void this.loadFirestoreState();
       return;
     }
 
+    this.loadSettings();
     this.loadMeals();
     this.loadPlans();
     this.seedDefaultMealsIfNeeded();
@@ -504,6 +503,10 @@ export class MealPlannerService {
   }
 
   private loadMeals(): void {
+    if (this.firestoreEnabled) {
+      return;
+    }
+
     const raw = localStorage.getItem(MEAL_STORAGE_KEY);
     const storedMeals: Meal[] = raw ? JSON.parse(raw) : [];
     this.meals = storedMeals.map((meal) => ({
@@ -570,6 +573,10 @@ export class MealPlannerService {
   }
 
   private loadSettings(): void {
+    if (this.firestoreEnabled) {
+      return;
+    }
+
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!raw) {
       return;
@@ -624,14 +631,13 @@ export class MealPlannerService {
       },
     };
 
-    localStorage.setItem(MEAL_STORAGE_KEY, JSON.stringify(appState.meals));
-    localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(appState.plans));
-    localStorage.setItem(
-      SETTINGS_STORAGE_KEY,
-      JSON.stringify(appState.settings),
-    );
-
     if (!this.firestoreEnabled || !this.firestore) {
+      localStorage.setItem(MEAL_STORAGE_KEY, JSON.stringify(appState.meals));
+      localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(appState.plans));
+      localStorage.setItem(
+        SETTINGS_STORAGE_KEY,
+        JSON.stringify(appState.settings),
+      );
       return;
     }
 
@@ -639,10 +645,7 @@ export class MealPlannerService {
       doc(this.firestore, 'households', this.householdKey),
       appState,
     ).catch((error) => {
-      console.error(
-        'Firestore write failed; localStorage fallback remains in use.',
-        error,
-      );
+      console.error('Firestore write failed.', error);
     });
   }
 
@@ -655,6 +658,10 @@ export class MealPlannerService {
   }
 
   private loadPlans(): void {
+    if (this.firestoreEnabled) {
+      return;
+    }
+
     const raw = localStorage.getItem(PLAN_STORAGE_KEY);
     this.plans = raw ? JSON.parse(raw) : [];
   }

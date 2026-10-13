@@ -1,0 +1,19 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">Meal Planner</div>
+    <div class="header-controls">
+      <nav class="top-nav" aria-label="Main navigation">
+        <a routerLink="/this-week" routerLinkActive="active">This Week</a>
+        <a routerLink="/plan-next-week" routerLinkActive="active">Plan Next Week</a>
+        <a routerLink="/meals" routerLinkActive="active">Meal Library</a>
+      </nav>
+      <a class="settings-link" routerLink="/settings" routerLinkActive="active" aria-label="Settings" title="Settings">
+        <mat-icon>settings</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <main class="content-shell">
+    <router-outlet></router-outlet>
+  </main>
+</div>

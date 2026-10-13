@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.page-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 18px 32px;
+}
+
+.topbar {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #5f687a;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  margin: 8px 0 0;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.panel {
+  padding: 18px 20px 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+}
+
+.field-grid mat-form-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.meal-form textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button {
+  padding: 12px 18px;
+  border: 0;
+  background: #7a4cc7;
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+.secondary-button {
+  padding: 10px 16px;
+  border: 1px solid #d2d2d4;
+  background: #e8e8eb;
+  color: #1d2a39;
+}

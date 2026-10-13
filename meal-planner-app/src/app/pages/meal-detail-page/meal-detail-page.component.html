@@ -1,0 +1,59 @@
+<div class="page-shell" *ngIf="meal as savedMeal">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ng-container *ngIf="dayIndex !== null; else thisWeekBreadcrumb">
+      <a routerLink="/plan-next-week">Plan Next Week</a>
+      <span aria-hidden="true">/</span>
+      <a [routerLink]="['/plan-next-week', dayIndex, 'choose']">Choose for {{ dayLabel }}</a>
+    </ng-container>
+    <ng-template #thisWeekBreadcrumb>
+      <a routerLink="/this-week">This Week</a>
+    </ng-template>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ savedMeal.customTitle || savedMeal.name }}</span>
+  </nav>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">
+        {{ savedMeal.category }} · {{ mealPlanner.getMealTypeLabel(savedMeal.mealType) }} ·
+        {{ savedMeal.vegetarian == null ? 'Diet not set' : savedMeal.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}
+      </p>
+      <h1>{{ savedMeal.customTitle || savedMeal.name }}</h1>
+    </div>
+    <div class="header-actions">
+      <a class="secondary-button" routerLink="/meals">Meal Library</a>
+      <a class="primary-button" [routerLink]="['/meals', savedMeal.id, 'edit']">Edit meal</a>
+    </div>
+  </header>
+
+  <article class="meal-card">
+    <div class="summary-row">
+      <div class="rating-box" aria-label="Meal rating">
+        <span>{{ mealPlanner.getStarDisplay(savedMeal.starRating) }}</span>
+        <strong>{{ savedMeal.starRating }}/10</strong>
+      </div>
+      <div class="meta-row">
+        <span>Used {{ savedMeal.timesUsed }} times</span>
+      </div>
+    </div>
+
+    <section class="info-block" *ngIf="savedMeal.ingredients.length">
+      <h2>Ingredients</h2>
+      <ul>
+        <li *ngFor="let ingredient of savedMeal.ingredients">{{ ingredient }}</li>
+      </ul>
+    </section>
+
+    <section class="info-block" *ngIf="savedMeal.steps.length">
+      <h2>Recipe steps</h2>
+      <ol>
+        <li *ngFor="let step of savedMeal.steps">{{ step }}</li>
+      </ol>
+    </section>
+
+    <section class="info-block" *ngIf="savedMeal.notes">
+      <h2>Notes</h2>
+      <p>{{ savedMeal.notes }}</p>
+    </section>
+  </article>
+</div>

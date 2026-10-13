@@ -1,0 +1,124 @@
+<div class="page-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Meal Library</p>
+      <h1>{{ isEditing ? 'Edit meal' : 'Add a meal' }}</h1>
+    </div>
+  </header>
+
+  <section class="panel">
+    <form (ngSubmit)="onSubmitMeal()" class="meal-form" novalidate>
+      <div class="field-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Meal name</mat-label>
+          <input
+            matInput
+            [(ngModel)]="mealForm.name"
+            #mealNameControl="ngModel"
+            name="mealName"
+            type="text"
+            required
+          />
+          <mat-error *ngIf="(mealNameControl.invalid || !mealNameControl.value?.trim()) && (mealNameControl.touched || submitted)">
+            A meal name is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Category</mat-label>
+          <input
+            matInput
+            [(ngModel)]="mealForm.category"
+            #categoryControl="ngModel"
+            name="mealCategory"
+            type="text"
+            required
+          />
+          <mat-error *ngIf="(categoryControl.invalid || !categoryControl.value?.trim()) && (categoryControl.touched || submitted)">
+            A category is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Vegetarian</mat-label>
+          <mat-select
+            [(ngModel)]="mealForm.vegetarian"
+            #vegetarianControl="ngModel"
+            name="vegetarian"
+            required
+          >
+            <mat-option [value]="true">Yes</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+          <mat-error *ngIf="vegetarianControl.invalid && (vegetarianControl.touched || submitted)">
+            Choose Yes or No.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Meal type</mat-label>
+          <mat-select [(ngModel)]="mealForm.mealType" name="mealType">
+            <mat-option value="recipe">Recipe</mat-option>
+            <mat-option value="takeaway">Take away</mat-option>
+            <mat-option value="eatingOut">Eating out</mat-option>
+            <mat-option value="leftovers">Leftovers</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Rating out of 10</mat-label>
+          <mat-select [(ngModel)]="mealForm.starRating" name="starRating">
+            <mat-option *ngFor="let rating of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" [value]="rating">{{ rating }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field
+          *ngIf="mealForm.mealType === 'leftovers'"
+          class="full-width"
+          appearance="outline"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>What are the leftovers?</mat-label>
+          <input
+            matInput
+            [(ngModel)]="mealForm.customTitle"
+            #leftoversTitleControl="ngModel"
+            name="customTitle"
+            type="text"
+            required
+          />
+          <mat-error *ngIf="(leftoversTitleControl.invalid || !leftoversTitleControl.value?.trim()) && (leftoversTitleControl.touched || submitted)">
+            Describe the leftovers.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Ingredients</mat-label>
+          <textarea matInput [(ngModel)]="mealForm.ingredients" name="ingredients" rows="3" placeholder="One item per line or comma separated"></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Recipe steps</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="mealForm.steps"
+            #stepsControl="ngModel"
+            name="steps"
+            rows="4"
+            placeholder="One step per line"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Notes</mat-label>
+          <textarea matInput [(ngModel)]="mealForm.notes" name="notes" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button class="primary-button" type="submit">{{ isEditing ? 'Save meal' : 'Add meal' }}</button>
+        <button class="secondary-button" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </section>
+</div>

@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.page-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 18px 32px;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: #5f687a;
+  font-size: 0.9rem;
+}
+
+.breadcrumbs a {
+  color: #5c2fa5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #5f687a;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  margin: 8px 0 0;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.topbar {
+  margin-bottom: 24px;
+}
+
+.meal-list {
+  display: grid;
+  gap: 12px;
+}
+
+.meal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #dfe8f4;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.meal-summary {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.meal-summary strong {
+  overflow-wrap: anywhere;
+}
+
+.meal-summary:hover strong,
+.meal-summary:focus-visible strong {
+  text-decoration: underline;
+}
+
+.meal-type {
+  color: #57667d;
+  font-size: 0.85rem;
+}
+
+.rating {
+  color: #8a6200;
+  font-size: 0.9rem;
+}
+
+.choose-button {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #7a4cc7;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.empty-state {
+  color: #53627b;
+}
+
+@media (max-width: 600px) {
+  .meal-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

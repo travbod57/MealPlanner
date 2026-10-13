@@ -1,0 +1,36 @@
+<div class="page-shell">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a routerLink="/plan-next-week">Plan Next Week</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">Choose for {{ dayLabel }}</span>
+  </nav>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Plan Next Week</p>
+      <h1>Choose a meal for {{ dayLabel }}</h1>
+    </div>
+  </header>
+
+  <section class="meal-list" *ngIf="mealPlanner.meals.length; else noMeals">
+    <article class="meal-item" *ngFor="let meal of mealPlanner.meals">
+      <a
+        class="meal-summary"
+        [routerLink]="['/meals', meal.id]"
+        [queryParams]="{ dayIndex: dayIndex }"
+      >
+        <span class="meal-type">{{ meal.category }} · {{ mealPlanner.getMealTypeLabel(meal.mealType) }}</span>
+        <strong>{{ meal.customTitle || meal.name }}</strong>
+        <span class="meal-diet">{{ meal.vegetarian == null ? 'Diet not set' : meal.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}</span>
+        <span class="rating">{{ mealPlanner.getStarDisplay(meal.starRating) }} · {{ meal.starRating }}/10</span>
+      </a>
+      <button class="choose-button" type="button" (click)="selectMeal(meal.id)">
+        Choose for {{ dayLabel }}
+      </button>
+    </article>
+  </section>
+</div>
+
+<ng-template #noMeals>
+  <p class="empty-state">No saved meals yet. Add meals from the Meal Library first.</p>
+</ng-template>

@@ -1,0 +1,38 @@
+<div class="page-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Meal Planner</p>
+      <h1>Settings</h1>
+    </div>
+  </header>
+
+  <form (ngSubmit)="saveSettings()" class="settings-form">
+    <section class="panel">
+      <h2>Meal plan week</h2>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Week starts on</mat-label>
+        <mat-select [(ngModel)]="selectedWeekStartDay" name="weekStartDay">
+          <mat-option *ngFor="let day of mealPlanner.WEEKDAY_OPTIONS" [value]="day.value">
+            {{ day.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="panel">
+      <h2>Randomiser</h2>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Maximum vegetarian meals</mat-label>
+        <mat-select [(ngModel)]="selectedMaxVegetarianMeals" name="maxVegetarianMeals">
+          <mat-option *ngFor="let count of [0, 1, 2, 3, 4, 5, 6, 7]" [value]="count">
+            {{ count }} of 7
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <div class="form-actions">
+      <button class="primary-button" type="submit">Save settings</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,33 @@
+<div class="page-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Meal Planner</p>
+      <h1>This Week</h1>
+    </div>
+  </header>
+
+  <section class="panel">
+    <h2>This week's dinners</h2>
+    <div class="week-plan-grid">
+      <ng-container *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
+        <a
+          *ngIf="getMealIdForDay(index) as mealId; else unplannedDay"
+          class="day-slot clickable"
+          [class.current-day]="isToday(index)"
+          [routerLink]="['/meals', mealId]"
+          [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
+        >
+          <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+          <span>{{ mealPlanner.getMealNameById(mealId) }}</span>
+        </a>
+
+        <ng-template #unplannedDay>
+          <article class="day-slot" [class.current-day]="isToday(index)">
+            <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+            <span>Not planned</span>
+          </article>
+        </ng-template>
+      </ng-container>
+    </div>
+  </section>
+</div>

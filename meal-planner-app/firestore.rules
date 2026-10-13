@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Phase 1 household model: one shared household document for the whole app.
+    // The app uses the fixed document id "default-household" so one household
+    // can share meals, plans and settings without a multi-user permission model.
+    match /households/{householdId} {
+      allow read, write: if householdId == 'default-household';
+    }
+  }
+}

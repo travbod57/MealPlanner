@@ -85,10 +85,12 @@ export class MealPlannerService {
 
   constructor() {
     if (this.firestoreEnabled) {
+      console.info('MealPlannerService: using Firestore persistence');
       void this.loadFirestoreState();
       return;
     }
 
+    console.info('MealPlannerService: using localStorage persistence');
     this.loadSettings();
     this.loadMeals();
     this.loadPlans();

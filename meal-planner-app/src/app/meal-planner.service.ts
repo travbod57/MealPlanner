@@ -483,6 +483,8 @@ export class MealPlannerService {
     ];
 
     this.meals = sampleMeals;
+    this.weekStartDay = 3;
+    this.maxVegetarianMeals = 3;
 
     const starterPlan: WeeklyPlan = {
       id: this.makeId(),

@@ -629,8 +629,11 @@ export class MealPlannerService {
     void setDoc(
       doc(this.firestore, 'households', this.householdKey),
       appState,
-    ).catch(() => {
-      // Keep the browser localStore fallback if Firestore is temporarily unavailable.
+    ).catch((error) => {
+      console.error(
+        'Firestore write failed; localStorage fallback remains in use.',
+        error,
+      );
     });
   }
 

@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  useFirestore: false,
+  useFirestore: true,
   firebase: {
     apiKey: 'AIzaSyBd3qBqsgKNqScH3E3regGbHBmJyKyrsic',
     authDomain: 'mealplannerapp-prod-2026.firebaseapp.com',

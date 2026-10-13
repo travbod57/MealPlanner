@@ -85,14 +85,14 @@ export class MealPlannerService {
 
   constructor() {
     this.loadSettings();
-    this.loadMeals();
-    this.loadPlans();
 
     if (this.firestoreEnabled) {
       void this.loadFirestoreState();
       return;
     }
 
+    this.loadMeals();
+    this.loadPlans();
     this.seedDefaultMealsIfNeeded();
   }
 
@@ -521,7 +521,16 @@ export class MealPlannerService {
       doc(this.firestore, 'households', this.householdKey),
     );
     if (!snapshot.exists()) {
-      if (this.meals.length === 0) {
+      if (environment.production) {
+        localStorage.removeItem(MEAL_STORAGE_KEY);
+        localStorage.removeItem(PLAN_STORAGE_KEY);
+        localStorage.removeItem(SETTINGS_STORAGE_KEY);
+        this.meals = [];
+        this.plans = [];
+        this.draftPlanMealIds = Array(7).fill(null);
+        this.weekStartDay = 3;
+        this.maxVegetarianMeals = 3;
+      } else if (this.meals.length === 0) {
         this.seedDefaultMealsIfNeeded();
       }
       this.persistAppState();

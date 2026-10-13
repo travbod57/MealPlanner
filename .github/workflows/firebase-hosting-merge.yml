@@ -33,5 +33,5 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEAL_PLANNER_APP }}
           channelId: live
-          projectId: meal-planner-app
+          projectId: mealplannerapp-prod-2026
           entryPoint: ./meal-planner-app

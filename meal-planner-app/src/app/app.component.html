@@ -16,4 +16,8 @@
   <main class="content-shell">
     <router-outlet></router-outlet>
   </main>
+
+  <div class="build-badge" aria-label="Build information">
+    Build #{{ buildInfo.buildNumber }} · {{ buildInfo.sha }} · {{ buildInfo.generatedAt | date: 'yyyy-MM-dd HH:mm' }}
+  </div>
 </div>

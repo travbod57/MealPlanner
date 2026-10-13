@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
+import { buildInfo } from './build-info';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -16,4 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly buildInfo = buildInfo;
+}

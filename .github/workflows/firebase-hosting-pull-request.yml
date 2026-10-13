@@ -8,6 +8,9 @@ jobs:
   build_and_preview:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+      BUILD_SHA: ${{ github.sha }}
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -19,6 +22,11 @@ jobs:
           cache: npm
           cache-dependency-path: meal-planner-app/package-lock.json
 
+      - name: Generate build metadata
+        working-directory: meal-planner-app
+        run: |
+          node -e "const fs = require('fs'); const buildNumber = process.env.BUILD_NUMBER || 'local'; const sha = (process.env.BUILD_SHA || 'local').slice(0, 7); const generatedAt = new Date().toISOString(); const file = 'src/app/build-info.ts'; const content = 'export const buildInfo = {\n  buildNumber: ' + JSON.stringify(String(buildNumber)) + ',\n  sha: ' + JSON.stringify(String(sha)) + ',\n  generatedAt: ' + JSON.stringify(generatedAt) + ',\n};\n'; fs.writeFileSync(file, content); console.log('Build metadata: ' + buildNumber + ' / ' + sha + ' / ' + generatedAt);"
+
       - name: Install dependencies
         working-directory: meal-planner-app
         run: npm ci
@@ -26,6 +34,11 @@ jobs:
       - name: Build the app
         working-directory: meal-planner-app
         run: npm run build
+
+      - name: Print deploy metadata
+        run: |
+          echo "Preview build number: $BUILD_NUMBER"
+          echo "Commit SHA: $BUILD_SHA"
 
       - name: Deploy preview to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

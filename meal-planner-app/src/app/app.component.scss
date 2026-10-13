@@ -78,6 +78,21 @@
   padding-top: 8px;
 }
 
+.build-badge {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 20;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(31, 41, 55, 0.82);
+  color: #f8fafc;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+}
+
 @media (max-width: 600px) {
   .app-header {
     align-items: flex-start;

@@ -37,9 +37,14 @@
           title="Vegetarian"
         >V</span>
         <div class="day-meal">
-          <span *ngIf="mealPlanner.draftPlanMealIds[index] as mealId" class="selected-meal-name">
+          <a
+            *ngIf="mealPlanner.draftPlanMealIds[index] as mealId"
+            class="selected-meal-name"
+            [routerLink]="['/meals', mealId]"
+            [queryParams]="{ from: 'plan-next-week' }"
+          >
             {{ getMealNameById(mealId) }}
-          </span>
+          </a>
           <span *ngIf="!mealPlanner.draftPlanMealIds[index]" class="empty-choice">No meal selected</span>
         </div>
         <div class="day-actions">

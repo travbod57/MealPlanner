@@ -27,3 +27,13 @@ body {
 	font-weight: 800;
 	line-height: 1;
 }
+
+.meal-title-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.meal-title-link:hover,
+.meal-title-link:focus-visible {
+	text-decoration: underline;
+}

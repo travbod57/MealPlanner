@@ -15,6 +15,7 @@
           class="day-slot clickable"
           [class.current-day]="isToday(index)"
           [routerLink]="['/meals', mealId]"
+          [queryParams]="{ from: 'this-week' }"
           [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
         >
           <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>

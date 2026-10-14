@@ -18,6 +18,8 @@ export class MealDetailPageComponent implements OnInit {
 
   meal: Meal | null = null;
   dayIndex: number | null = null;
+  origin: 'this-week' | 'plan-next-week' | 'meal-picker' | 'meal-library' =
+    'meal-library';
 
   get dayLabel(): string {
     return this.dayIndex === null
@@ -26,6 +28,16 @@ export class MealDetailPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const origin = this.route.snapshot.queryParamMap.get('from');
+    if (
+      origin === 'this-week' ||
+      origin === 'plan-next-week' ||
+      origin === 'meal-picker' ||
+      origin === 'meal-library'
+    ) {
+      this.origin = origin;
+    }
+
     const dayIndex = this.route.snapshot.queryParamMap.get('dayIndex');
     if (dayIndex !== null) {
       const parsedDayIndex = Number(dayIndex);
@@ -36,6 +48,10 @@ export class MealDetailPageComponent implements OnInit {
       ) {
         this.dayIndex = parsedDayIndex;
       }
+    }
+
+    if (this.origin === 'meal-picker' && this.dayIndex === null) {
+      this.origin = 'plan-next-week';
     }
 
     const mealId = this.route.snapshot.paramMap.get('id');

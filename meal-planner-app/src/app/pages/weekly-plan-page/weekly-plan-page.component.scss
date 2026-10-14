@@ -145,6 +145,12 @@ h2 {
   font-weight: 700;
   line-height: 1.25;
   overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.selected-meal-name:hover,
+.selected-meal-name:focus-visible {
+  text-decoration: underline;
 }
 
 .empty-choice {

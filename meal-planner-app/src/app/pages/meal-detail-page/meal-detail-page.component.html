@@ -1,13 +1,15 @@
 <div class="page-shell" *ngIf="meal as savedMeal">
   <nav class="breadcrumbs" aria-label="Breadcrumb">
-    <ng-container *ngIf="dayIndex !== null; else thisWeekBreadcrumb">
-      <a routerLink="/plan-next-week">Plan Next Week</a>
-      <span aria-hidden="true">/</span>
-      <a [routerLink]="['/plan-next-week', dayIndex, 'choose']">Choose for {{ dayLabel }}</a>
+    <ng-container [ngSwitch]="origin">
+      <a *ngSwitchCase="'this-week'" routerLink="/this-week">This Week</a>
+      <a *ngSwitchCase="'plan-next-week'" routerLink="/plan-next-week">Plan Next Week</a>
+      <a *ngSwitchCase="'meal-library'" routerLink="/meals">Meal Library</a>
+      <ng-container *ngSwitchCase="'meal-picker'">
+        <a routerLink="/plan-next-week">Plan Next Week</a>
+        <span aria-hidden="true">/</span>
+        <a [routerLink]="['/plan-next-week', dayIndex, 'choose']">Choose for {{ dayLabel }}</a>
+      </ng-container>
     </ng-container>
-    <ng-template #thisWeekBreadcrumb>
-      <a routerLink="/this-week">This Week</a>
-    </ng-template>
     <span aria-hidden="true">/</span>
     <span aria-current="page">{{ savedMeal.customTitle || savedMeal.name }}</span>
   </nav>

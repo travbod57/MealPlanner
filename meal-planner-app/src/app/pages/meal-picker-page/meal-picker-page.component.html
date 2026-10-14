@@ -17,7 +17,7 @@
       <a
         class="meal-summary"
         [routerLink]="['/meals', meal.id]"
-        [queryParams]="{ dayIndex: dayIndex }"
+        [queryParams]="{ dayIndex: dayIndex, from: 'meal-picker' }"
       >
         <span class="meal-type">{{ meal.category }} · {{ mealPlanner.getMealTypeLabel(meal.mealType) }}</span>
         <span class="meal-name-row">

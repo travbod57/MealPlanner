@@ -44,6 +44,20 @@ h3 {
   margin: 0;
 }
 
+.meal-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.meal-title-row h3 {
+  color: #182737;
+  font-size: 1.4rem;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
 .primary-button {
   align-self: center;
   padding: 12px 18px;
@@ -209,11 +223,11 @@ h3 {
 .secondary-button {
   display: inline-block;
   background: #e8e8eb;
-  color: #1d2a39;
-  padding: 10px 16px;
+  color: #39434d;
+  padding: 8px 12px;
   border: 1px solid #d2d2d4;
   border-radius: 10px;
-  font-weight: 700;
+  font-size: 0.875rem;
   cursor: pointer;
   text-decoration: none;
 }

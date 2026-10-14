@@ -20,7 +20,16 @@
         [queryParams]="{ dayIndex: dayIndex }"
       >
         <span class="meal-type">{{ meal.category }} · {{ mealPlanner.getMealTypeLabel(meal.mealType) }}</span>
-        <strong>{{ meal.customTitle || meal.name }}</strong>
+        <span class="meal-name-row">
+          <strong>{{ meal.customTitle || meal.name }}</strong>
+          <span
+            *ngIf="meal.vegetarian === true"
+            class="vegetarian-mark"
+            role="img"
+            aria-label="Vegetarian"
+            title="Vegetarian"
+          >V</span>
+        </span>
         <span class="meal-diet">{{ meal.vegetarian == null ? 'Diet not set' : meal.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}</span>
         <span class="rating">{{ mealPlanner.getStarDisplay(meal.starRating) }} · {{ meal.starRating }}/10</span>
       </a>

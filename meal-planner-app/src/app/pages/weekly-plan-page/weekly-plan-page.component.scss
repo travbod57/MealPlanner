@@ -55,15 +55,13 @@ h2 {
 }
 
 .randomize-btn,
-.primary-button,
 .secondary-button {
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
 }
 
-.randomize-btn,
-.primary-button {
+.randomize-btn {
   background: #7a4cc7;
   color: white;
   padding: 12px 18px;
@@ -78,12 +76,17 @@ h2 {
   border: 1px solid #d2d2d4;
 }
 
-.form-actions,
-.plan-actions {
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  background: #d9dadd;
+}
+
+.topbar-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 18px;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .week-plan-grid {
@@ -93,10 +96,11 @@ h2 {
 }
 
 .day-slot {
+  position: relative;
   background: #f6f8ff;
   border: 1px solid #dfe8f4;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px 12px 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -110,16 +114,42 @@ h2 {
 .day-header {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  padding: 0 30px 9px 0;
+  border-bottom: 1px solid #dfe8f4;
 }
 
 .day-header strong {
-  font-size: 0.95rem;
+  color: #667386;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
-.day-header span {
-  font-size: 0.8rem;
-  color: #465a7d;
+.day-slot > .vegetarian-mark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #28613c;
+  font-size: 0.75rem;
+}
+
+.day-meal {
+  min-height: 42px;
+  padding-top: 2px;
+}
+
+.selected-meal-name {
+  display: flex;
+  align-items: center;
+  color: #1d2a39;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.empty-choice {
+  color: #7a8590;
+  font-size: 0.85rem;
 }
 
 .day-actions {
@@ -151,11 +181,9 @@ h2 {
 .choose-action:hover,
 .choose-action:focus-visible {
   background: #e0d0fa;
-  text-decoration: underline;
 }
 
 .day-slot.has-choice .choose-action {
-  gap: 7px;
   background: #dcefe1;
   color: #28613c;
 }
@@ -163,11 +191,6 @@ h2 {
 .day-slot.has-choice .choose-action:hover,
 .day-slot.has-choice .choose-action:focus-visible {
   background: #cce5d3;
-}
-
-.choice-check {
-  font-size: 1rem;
-  line-height: 1;
 }
 
 .clear-choice-action {
@@ -193,5 +216,10 @@ h2 {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }

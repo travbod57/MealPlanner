@@ -27,9 +27,7 @@ export interface WeeklyPlan {
   id: string;
   weekStart: string;
   mealIds: Array<string | null>;
-  isLocked: boolean;
   generatedAt: string;
-  lockedAt: string | null;
 }
 
 export interface MealFormState {
@@ -107,7 +105,9 @@ export class MealPlannerService {
   readonly WEEKDAY_OPTIONS = WEEKDAY_OPTIONS;
 
   get draftPlanMealIds(): Array<string | null> {
-    this.ensureDraftPlanWindow();
+    if (this.ensureDraftPlanWindow()) {
+      this.persistAppState();
+    }
     return this.draftMealIds;
   }
 
@@ -119,26 +119,18 @@ export class MealPlannerService {
   }
 
   get thisWeekPlan(): WeeklyPlan | null {
+    if (this.ensureDraftPlanWindow()) {
+      this.persistAppState();
+    }
     const weekStart = this.currentWeekStart();
-    return (
-      this.plans.find(
-        (plan) => plan.isLocked && plan.weekStart === weekStart,
-      ) ?? null
-    );
-  }
-
-  get nextWeekPlan(): WeeklyPlan | null {
-    const weekStart = this.nextWeekStart();
-    return (
-      this.plans.find(
-        (plan) => plan.isLocked && plan.weekStart === weekStart,
-      ) ?? null
-    );
+    return this.plans.find((plan) => plan.weekStart === weekStart) ?? null;
   }
 
   get historyPlans(): WeeklyPlan[] {
+    if (this.ensureDraftPlanWindow()) {
+      this.persistAppState();
+    }
     return [...this.plans]
-      .filter((plan) => plan.isLocked)
       .filter((plan) => plan.weekStart < this.currentWeekStart())
       .sort(
         (a, b) =>
@@ -153,6 +145,12 @@ export class MealPlannerService {
     }
 
     return meal.customTitle || meal.name;
+  }
+
+  isVegetarianMeal(mealId: string | null): boolean {
+    return this.meals.some(
+      (meal) => meal.id === mealId && meal.vegetarian === true,
+    );
   }
 
   getWeekDayDate(weekOffset: number, dayIndex: number): Date {
@@ -323,28 +321,61 @@ export class MealPlannerService {
       this.maxVegetarianMeals - this.getDraftVegetarianCount(),
     );
     const vegetarianMeals = this.shuffle(
-      this.meals.filter(
-        (meal) => meal.vegetarian !== false && !usedMealIds.has(meal.id),
-      ),
-    ).slice(0, Math.min(vegetarianCapacity, openDays.length));
-
-    vegetarianMeals.forEach((meal, index) => {
-      randomizedMealIds[openDays[index]] = meal.id;
-      usedMealIds.add(meal.id);
-    });
-
-    const remainingOpenDays = openDays.slice(vegetarianMeals.length);
-    const otherMeals = this.shuffle(
-      this.meals.filter(
-        (meal) => meal.vegetarian === false && !usedMealIds.has(meal.id),
-      ),
+      this.meals.filter((meal) => meal.vegetarian !== false),
     );
-    remainingOpenDays.forEach((dayIndex, index) => {
-      const meal = otherMeals[index];
-      if (meal) {
-        randomizedMealIds[dayIndex] = meal.id;
-      }
-    });
+    const otherMeals = this.shuffle(
+      this.meals.filter((meal) => meal.vegetarian === false),
+    );
+    const assignUniqueMeals = (
+      meals: Meal[],
+      dayIndexes: number[],
+    ): number[] => {
+      const availableMeals = meals.filter((meal) => !usedMealIds.has(meal.id));
+      const assignedMeals = availableMeals.slice(0, dayIndexes.length);
+      assignedMeals.forEach((meal, index) => {
+        randomizedMealIds[dayIndexes[index]] = meal.id;
+        usedMealIds.add(meal.id);
+      });
+      return dayIndexes.slice(assignedMeals.length);
+    };
+
+    const vegetarianDays = openDays.slice(
+      0,
+      Math.min(vegetarianCapacity, openDays.length),
+    );
+    const remainingVegetarianDays = assignUniqueMeals(
+      vegetarianMeals,
+      vegetarianDays,
+    );
+    const vegetarianMealsAssigned =
+      vegetarianDays.length - remainingVegetarianDays.length;
+    let remainingDays = [
+      ...remainingVegetarianDays,
+      ...openDays.slice(vegetarianDays.length),
+    ];
+    remainingDays = assignUniqueMeals(otherMeals, remainingDays);
+
+    if (this.meals.length < 7 && otherMeals.length > 0) {
+      remainingDays.forEach((dayIndex, index) => {
+        randomizedMealIds[dayIndex] = otherMeals[index % otherMeals.length].id;
+      });
+      remainingDays = [];
+    }
+
+    if (
+      this.meals.length < 7 &&
+      remainingDays.length > 0 &&
+      vegetarianMeals.length > 0
+    ) {
+      const remainingVegetarianCapacity =
+        vegetarianCapacity - vegetarianMealsAssigned;
+      remainingDays
+        .slice(0, remainingVegetarianCapacity)
+        .forEach((dayIndex, index) => {
+          randomizedMealIds[dayIndex] =
+            vegetarianMeals[index % vegetarianMeals.length].id;
+        });
+    }
 
     this.draftMealIds = randomizedMealIds;
     this.persistAppState();
@@ -378,43 +409,6 @@ export class MealPlannerService {
     this.persistAppState();
   }
 
-  lockPlan(): boolean {
-    if (this.draftPlanMealIds.some((mealId) => !mealId)) {
-      return false;
-    }
-
-    if (this.getDraftVegetarianCount() > this.maxVegetarianMeals) {
-      return false;
-    }
-
-    const weekday = this.nextWeekStart();
-    const mealIds = [...this.draftPlanMealIds];
-    const plan: WeeklyPlan = {
-      id: this.makeId(),
-      weekStart: weekday,
-      mealIds,
-      isLocked: true,
-      generatedAt: new Date().toISOString(),
-      lockedAt: new Date().toISOString(),
-    };
-
-    this.plans = [
-      plan,
-      ...this.plans.filter((savedPlan) => savedPlan.weekStart !== weekday),
-    ];
-    this.meals.forEach((meal) => {
-      if (mealIds.includes(meal.id)) {
-        meal.timesUsed += 1;
-        meal.updatedAt = new Date().toISOString();
-      }
-    });
-
-    this.draftMealIds = Array(7).fill(null);
-    this.draftPlanWeekStart = this.nextWeekStart();
-    this.persistAppState();
-    return true;
-  }
-
   getDraftVegetarianCount(): number {
     return this.draftPlanMealIds.filter((mealId) => {
       if (!mealId) {
@@ -427,6 +421,7 @@ export class MealPlannerService {
   }
 
   clearDraftPlan(): void {
+    this.ensureDraftPlanWindow();
     this.draftMealIds = Array.from({ length: 7 }, () => null);
     this.draftPlanWeekStart = this.nextWeekStart();
     this.persistAppState();
@@ -534,21 +529,12 @@ export class MealPlannerService {
     this.weekStartDay = 3;
     this.maxVegetarianMeals = 3;
 
-    const starterPlan: WeeklyPlan = {
-      id: this.makeId(),
-      weekStart: this.nextWeekStart(),
-      mealIds: Array.from({ length: 7 }, (_, index) => {
-        const meal = sampleMeals[index % sampleMeals.length];
-        return meal?.id ?? null;
-      }),
-      isLocked: true,
-      generatedAt: new Date().toISOString(),
-      lockedAt: new Date().toISOString(),
-    };
-
-    this.plans = [starterPlan];
-    this.saveMeals();
-    this.savePlans();
+    this.draftPlanWeekStart = this.nextWeekStart();
+    this.draftMealIds = Array.from({ length: 7 }, (_, index) => {
+      const meal = sampleMeals[index % sampleMeals.length];
+      return meal?.id ?? null;
+    });
+    this.persistAppState();
   }
 
   private loadMeals(): void {
@@ -643,21 +629,73 @@ export class MealPlannerService {
     draftPlan?: HouseholdData['draftPlan'] | null,
   ): void {
     const upcomingWeekStart = this.nextWeekStart();
-    this.draftPlanWeekStart = upcomingWeekStart;
-    this.draftMealIds =
-      draftPlan?.weekStart === upcomingWeekStart &&
+    if (
+      draftPlan &&
+      typeof draftPlan.weekStart === 'string' &&
       Array.isArray(draftPlan.mealIds) &&
       draftPlan.mealIds.length === 7
-        ? [...draftPlan.mealIds]
-        : Array(7).fill(null);
+    ) {
+      this.draftPlanWeekStart = draftPlan.weekStart;
+      this.draftMealIds = [...draftPlan.mealIds];
+      if (this.ensureDraftPlanWindow()) {
+        this.persistAppState();
+      }
+      return;
+    }
+
+    const previousPlan = this.plans.find(
+      (plan) => plan.weekStart === upcomingWeekStart,
+    );
+    this.draftPlanWeekStart = upcomingWeekStart;
+    this.draftMealIds = previousPlan
+      ? [...previousPlan.mealIds]
+      : Array(7).fill(null);
+    if (previousPlan) {
+      this.plans = this.plans.filter(
+        (plan) => plan.weekStart !== upcomingWeekStart,
+      );
+      this.persistAppState();
+    }
   }
 
-  private ensureDraftPlanWindow(): void {
+  private ensureDraftPlanWindow(): boolean {
     const upcomingWeekStart = this.nextWeekStart();
     if (this.draftPlanWeekStart !== upcomingWeekStart) {
+      const draftWeekStart = this.draftPlanWeekStart;
+      if (
+        draftWeekStart &&
+        draftWeekStart <= this.currentWeekStart() &&
+        this.draftMealIds.some(Boolean)
+      ) {
+        const existingPlan = this.plans.find(
+          (plan) => plan.weekStart === draftWeekStart,
+        );
+        const plan: WeeklyPlan = {
+          id: this.makeId(),
+          weekStart: draftWeekStart,
+          mealIds: [...this.draftMealIds],
+          generatedAt: new Date().toISOString(),
+        };
+        this.plans = [
+          plan,
+          ...this.plans.filter(
+            (savedPlan) => savedPlan.weekStart !== draftWeekStart,
+          ),
+        ];
+        if (!existingPlan) {
+          this.meals.forEach((meal) => {
+            if (plan.mealIds.includes(meal.id)) {
+              meal.timesUsed += 1;
+              meal.updatedAt = new Date().toISOString();
+            }
+          });
+        }
+      }
       this.draftMealIds = Array(7).fill(null);
       this.draftPlanWeekStart = upcomingWeekStart;
+      return true;
     }
+    return false;
   }
 
   private loadSettings(): void {
@@ -716,7 +754,7 @@ export class MealPlannerService {
       plans: this.plans,
       draftPlan: {
         weekStart: this.draftPlanWeekStart,
-        mealIds: this.draftPlanMealIds,
+        mealIds: this.draftMealIds,
       },
       settings: {
         weekStartDay: this.weekStartDay,
@@ -761,10 +799,6 @@ export class MealPlannerService {
 
     const raw = localStorage.getItem(PLAN_STORAGE_KEY);
     this.plans = raw ? JSON.parse(raw) : [];
-  }
-
-  private savePlans(): void {
-    this.persistAppState();
   }
 
   private parseList(value: string): string[] {

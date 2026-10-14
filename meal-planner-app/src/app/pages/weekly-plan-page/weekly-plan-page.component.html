@@ -4,9 +4,14 @@
       <p class="eyebrow">Meal Planner</p>
       <h1>Plan Next Week</h1>
     </div>
-    <button class="randomize-btn" type="button" (click)="randomizePlan()">
-      Randomize plan
-    </button>
+    <div class="topbar-actions">
+      <button class="randomize-btn" type="button" (click)="randomizePlan()">
+        Randomize plan
+      </button>
+      <button class="secondary-button" type="button" (click)="clearDraftPlan()">
+        Clear all
+      </button>
+    </div>
   </header>
 
   <section class="panel">
@@ -15,7 +20,7 @@
       Randomizer maximum: {{ mealPlanner.maxVegetarianMeals }} vegetarian
       {{ mealPlanner.maxVegetarianMeals === 1 ? 'meal' : 'meals' }}
     </p>
-    <div class="week-plan-grid" *ngIf="mealPlanner.meals.length; else noMealsTemplate">
+    <div class="week-plan-grid">
       <div
         class="day-slot"
         *ngFor="let day of mealPlanner.DAY_LABELS; let index = index"
@@ -23,15 +28,23 @@
       >
         <div class="day-header">
           <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
-          <span *ngIf="mealPlanner.draftPlanMealIds[index] as mealId">
+        </div>
+        <span
+          *ngIf="mealPlanner.isVegetarianMeal(mealPlanner.draftPlanMealIds[index])"
+          class="vegetarian-mark"
+          role="img"
+          aria-label="Vegetarian"
+          title="Vegetarian"
+        >V</span>
+        <div class="day-meal">
+          <span *ngIf="mealPlanner.draftPlanMealIds[index] as mealId" class="selected-meal-name">
             {{ getMealNameById(mealId) }}
           </span>
-          <span *ngIf="!mealPlanner.draftPlanMealIds[index]">No meal selected</span>
+          <span *ngIf="!mealPlanner.draftPlanMealIds[index]" class="empty-choice">No meal selected</span>
         </div>
         <div class="day-actions">
           <a class="choose-action" [routerLink]="['/plan-next-week', index, 'choose']">
             {{ mealPlanner.draftPlanMealIds[index] ? 'Change' : 'Choose' }}
-            <span class="choice-check" *ngIf="mealPlanner.draftPlanMealIds[index]" aria-hidden="true">&#10003;</span>
           </a>
           <button
             *ngIf="mealPlanner.draftPlanMealIds[index]"
@@ -46,13 +59,5 @@
       </div>
     </div>
 
-    <div class="plan-actions">
-      <button class="primary-button" type="button" (click)="lockPlan()">Lock plan for next week</button>
-      <button class="secondary-button" type="button" (click)="clearDraftPlan()">Clear draft</button>
-    </div>
   </section>
 </div>
-
-<ng-template #noMealsTemplate>
-  <p class="empty-state">No meals saved yet. Add your first meal to start planning.</p>
-</ng-template>

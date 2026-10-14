@@ -12,7 +12,16 @@
       <article class="meal-card" *ngFor="let meal of mealPlanner.meals">
         <div class="meal-card-header">
           <div>
-            <h3>{{ meal.customTitle || meal.name }}</h3>
+            <div class="meal-title-row">
+              <h3>{{ meal.customTitle || meal.name }}</h3>
+              <span
+                *ngIf="meal.vegetarian === true"
+                class="vegetarian-mark"
+                role="img"
+                aria-label="Vegetarian"
+                title="Vegetarian"
+              >V</span>
+            </div>
           </div>
           <div class="rating-box">
             <span>{{ getStarDisplay(meal.starRating) }}</span>
@@ -85,7 +94,7 @@
   </section>
 
   <section class="panel" *ngIf="mealPlanner.thisWeekPlan">
-    <h2>Current locked plan</h2>
+    <h2>This week's plan</h2>
     <div class="week-plan-grid preview">
       <div class="day-slot" *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
         <div class="day-header">

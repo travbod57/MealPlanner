@@ -13,3 +13,17 @@ body {
 	margin: 0;
 	font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.vegetarian-mark {
+	display: inline-grid;
+	flex: 0 0 22px;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #dcefe1;
+	color: #28613c;
+	font-size: 0.75rem;
+	font-weight: 800;
+	line-height: 1;
+}

@@ -73,13 +73,18 @@ h1 {
   text-decoration: none;
 }
 
-.meal-summary strong {
-  overflow-wrap: anywhere;
+.meal-name-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
 
-.meal-summary:hover strong,
-.meal-summary:focus-visible strong {
-  text-decoration: underline;
+.meal-name-row strong {
+  color: #182737;
+  font-size: 1.3rem;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .meal-type {
@@ -94,13 +99,18 @@ h1 {
 
 .choose-button {
   flex: 0 0 auto;
-  padding: 10px 14px;
-  border: 0;
+  padding: 8px 12px;
+  border: 1px solid #d2d7dc;
   border-radius: 8px;
-  background: #7a4cc7;
-  color: #fff;
-  font-weight: 700;
+  background: #eef0f2;
+  color: #39434d;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.choose-button:hover,
+.choose-button:focus-visible {
+  background: #dfe3e6;
 }
 
 .empty-state {

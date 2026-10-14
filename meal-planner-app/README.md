@@ -68,9 +68,7 @@ The cloud version stores a single document at `households/default-household`.
       "id": "plan-123",
       "weekStart": "2026-01-05",
       "mealIds": ["meal-123", null, null, null, null, null, null],
-      "isLocked": true,
-      "generatedAt": "2026-01-01T00:00:00.000Z",
-      "lockedAt": "2026-01-01T00:00:00.000Z"
+      "generatedAt": "2026-01-01T00:00:00.000Z"
     }
   ],
   "settings": {

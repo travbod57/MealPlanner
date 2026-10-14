@@ -16,7 +16,11 @@
       {{ mealPlanner.maxVegetarianMeals === 1 ? 'meal' : 'meals' }}
     </p>
     <div class="week-plan-grid" *ngIf="mealPlanner.meals.length; else noMealsTemplate">
-      <div class="day-slot" *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
+      <div
+        class="day-slot"
+        *ngFor="let day of mealPlanner.DAY_LABELS; let index = index"
+        [class.has-choice]="!!mealPlanner.draftPlanMealIds[index]"
+      >
         <div class="day-header">
           <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
           <span *ngIf="mealPlanner.draftPlanMealIds[index] as mealId">
@@ -24,9 +28,21 @@
           </span>
           <span *ngIf="!mealPlanner.draftPlanMealIds[index]">No meal selected</span>
         </div>
-        <a class="choose-action" [routerLink]="['/plan-next-week', index, 'choose']">
-          Choose
-        </a>
+        <div class="day-actions">
+          <a class="choose-action" [routerLink]="['/plan-next-week', index, 'choose']">
+            {{ mealPlanner.draftPlanMealIds[index] ? 'Change' : 'Choose' }}
+            <span class="choice-check" *ngIf="mealPlanner.draftPlanMealIds[index]" aria-hidden="true">&#10003;</span>
+          </a>
+          <button
+            *ngIf="mealPlanner.draftPlanMealIds[index]"
+            class="clear-choice-action"
+            type="button"
+            [attr.aria-label]="'Clear ' + day + ' meal choice'"
+            (click)="clearMealChoice(index)"
+          >
+            Clear
+          </button>
+        </div>
       </div>
     </div>
 

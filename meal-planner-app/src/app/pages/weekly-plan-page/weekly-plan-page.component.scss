@@ -102,6 +102,11 @@ h2 {
   gap: 10px;
 }
 
+.day-slot.has-choice {
+  background: #edf6ef;
+  border-color: #4c9164;
+}
+
 .day-header {
   display: flex;
   flex-direction: column;
@@ -117,14 +122,29 @@ h2 {
   color: #465a7d;
 }
 
-.choose-action {
-  align-self: flex-start;
+.day-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: auto;
+}
+
+.choose-action,
+.clear-choice-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 36px;
   padding: 8px 12px;
   border-radius: 8px;
+  font-weight: 700;
+}
+
+.choose-action {
   background: #ede2ff;
   color: #5c2fa5;
-  font-weight: 700;
   text-decoration: none;
 }
 
@@ -132,6 +152,36 @@ h2 {
 .choose-action:focus-visible {
   background: #e0d0fa;
   text-decoration: underline;
+}
+
+.day-slot.has-choice .choose-action {
+  gap: 7px;
+  background: #dcefe1;
+  color: #28613c;
+}
+
+.day-slot.has-choice .choose-action:hover,
+.day-slot.has-choice .choose-action:focus-visible {
+  background: #cce5d3;
+}
+
+.choice-check {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.clear-choice-action {
+  border: 1px solid #c7cbd0;
+  background: #e8e8eb;
+  color: #39434d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clear-choice-action:hover,
+.clear-choice-action:focus-visible {
+  background: #d9dadd;
 }
 
 .empty-state {

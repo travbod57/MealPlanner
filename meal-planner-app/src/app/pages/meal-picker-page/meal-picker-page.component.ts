@@ -33,7 +33,7 @@ export class MealPickerPageComponent implements OnInit {
   }
 
   selectMeal(mealId: string): void {
-    this.mealPlanner.draftPlanMealIds[this.dayIndex] = mealId;
+    this.mealPlanner.setDraftPlanMeal(this.dayIndex, mealId);
     void this.router.navigateByUrl('/plan-next-week');
   }
 }

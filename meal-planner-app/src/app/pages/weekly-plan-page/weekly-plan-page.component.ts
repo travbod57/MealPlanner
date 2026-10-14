@@ -45,6 +45,10 @@ export class WeeklyPlanPageComponent {
     this.mealPlanner.clearDraftPlan();
   }
 
+  clearMealChoice(dayIndex: number): void {
+    this.mealPlanner.clearDraftPlanMeal(dayIndex);
+  }
+
   getMealNameById(mealId: string | null): string {
     return this.mealPlanner.getMealNameById(mealId);
   }

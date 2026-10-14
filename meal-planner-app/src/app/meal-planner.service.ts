@@ -48,6 +48,10 @@ export interface MealFormState {
 interface HouseholdData {
   meals: Meal[];
   plans: WeeklyPlan[];
+  draftPlan: {
+    weekStart: string;
+    mealIds: Array<string | null>;
+  };
   settings: {
     weekStartDay: number;
     maxVegetarianMeals: number;
@@ -56,6 +60,7 @@ interface HouseholdData {
 
 const MEAL_STORAGE_KEY = 'meal-planner-meals';
 const PLAN_STORAGE_KEY = 'meal-planner-plans';
+const DRAFT_PLAN_STORAGE_KEY = 'meal-planner-draft-plan';
 const SETTINGS_STORAGE_KEY = 'meal-planner-settings';
 
 const WEEKDAY_OPTIONS = [
@@ -72,7 +77,8 @@ const WEEKDAY_OPTIONS = [
 export class MealPlannerService {
   meals: Meal[] = [];
   plans: WeeklyPlan[] = [];
-  draftPlanMealIds: Array<string | null> = Array(7).fill(null);
+  private draftMealIds: Array<string | null> = Array(7).fill(null);
+  private draftPlanWeekStart = '';
   weekStartDay = 3;
   maxVegetarianMeals = 3;
 
@@ -94,10 +100,16 @@ export class MealPlannerService {
     this.loadSettings();
     this.loadMeals();
     this.loadPlans();
+    this.loadDraftPlan();
     this.seedDefaultMealsIfNeeded();
   }
 
   readonly WEEKDAY_OPTIONS = WEEKDAY_OPTIONS;
+
+  get draftPlanMealIds(): Array<string | null> {
+    this.ensureDraftPlanWindow();
+    return this.draftMealIds;
+  }
 
   get DAY_LABELS(): string[] {
     return Array.from({ length: 7 }, (_, index) => {
@@ -161,12 +173,13 @@ export class MealPlannerService {
     const previousStartDay = this.weekStartDay;
     if (previousStartDay !== day) {
       const existingDraft = [...this.draftPlanMealIds];
-      this.draftPlanMealIds = Array.from({ length: 7 }, (_, index) => {
+      this.draftMealIds = Array.from({ length: 7 }, (_, index) => {
         const weekday = (day + index) % 7;
         const oldIndex = (weekday - previousStartDay + 7) % 7;
         return existingDraft[oldIndex] ?? null;
       });
       this.weekStartDay = day;
+      this.draftPlanWeekStart = this.nextWeekStart();
     }
 
     this.saveSettings();
@@ -270,7 +283,7 @@ export class MealPlannerService {
 
   deleteMeal(mealId: string): void {
     this.meals = this.meals.filter((meal) => meal.id !== mealId);
-    this.draftPlanMealIds = this.draftPlanMealIds.map((draftMealId) =>
+    this.draftMealIds = this.draftPlanMealIds.map((draftMealId) =>
       draftMealId === mealId ? null : draftMealId,
     );
     this.saveMeals();
@@ -298,39 +311,71 @@ export class MealPlannerService {
       return;
     }
 
+    const randomizedMealIds = [...this.draftPlanMealIds];
+    const usedMealIds = new Set(
+      randomizedMealIds.filter((mealId): mealId is string => Boolean(mealId)),
+    );
+    const openDays = randomizedMealIds
+      .map((mealId, index) => (mealId ? -1 : index))
+      .filter((index) => index >= 0);
+    const vegetarianCapacity = Math.max(
+      0,
+      this.maxVegetarianMeals - this.getDraftVegetarianCount(),
+    );
     const vegetarianMeals = this.shuffle(
-      this.meals.filter((meal) => meal.vegetarian !== false),
-    );
-    const otherMeals = this.shuffle(
-      this.meals.filter((meal) => meal.vegetarian === false),
-    );
-    const selectedMealIds = vegetarianMeals
-      .slice(0, this.maxVegetarianMeals)
-      .map((meal) => meal.id);
-    const otherMealSlots = 7 - selectedMealIds.length;
+      this.meals.filter(
+        (meal) => meal.vegetarian !== false && !usedMealIds.has(meal.id),
+      ),
+    ).slice(0, Math.min(vegetarianCapacity, openDays.length));
 
-    if (otherMeals.length > 0) {
-      for (let index = 0; index < otherMealSlots; index += 1) {
-        selectedMealIds.push(otherMeals[index % otherMeals.length].id);
+    vegetarianMeals.forEach((meal, index) => {
+      randomizedMealIds[openDays[index]] = meal.id;
+      usedMealIds.add(meal.id);
+    });
+
+    const remainingOpenDays = openDays.slice(vegetarianMeals.length);
+    const otherMeals = this.shuffle(
+      this.meals.filter(
+        (meal) => meal.vegetarian === false && !usedMealIds.has(meal.id),
+      ),
+    );
+    remainingOpenDays.forEach((dayIndex, index) => {
+      const meal = otherMeals[index];
+      if (meal) {
+        randomizedMealIds[dayIndex] = meal.id;
       }
-    } else if (vegetarianMeals.length > 0) {
-      const vegetarianSlots = Math.min(7, this.maxVegetarianMeals);
-      for (
-        let index = selectedMealIds.length;
-        index < vegetarianSlots;
-        index += 1
-      ) {
-        selectedMealIds.push(
-          vegetarianMeals[index % vegetarianMeals.length].id,
-        );
-      }
+    });
+
+    this.draftMealIds = randomizedMealIds;
+    this.persistAppState();
+  }
+
+  setDraftPlanMeal(dayIndex: number, mealId: string): void {
+    if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
+      return;
     }
 
-    const randomizedMealIds = this.shuffle(selectedMealIds);
-    this.draftPlanMealIds = Array.from(
-      { length: 7 },
-      (_, index) => randomizedMealIds[index] ?? null,
-    );
+    if (!this.meals.some((meal) => meal.id === mealId)) {
+      return;
+    }
+
+    this.ensureDraftPlanWindow();
+    this.draftMealIds[dayIndex] = mealId;
+    this.persistAppState();
+  }
+
+  clearDraftPlanMeal(dayIndex: number): void {
+    if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
+      return;
+    }
+
+    this.ensureDraftPlanWindow();
+    if (!this.draftMealIds[dayIndex]) {
+      return;
+    }
+
+    this.draftMealIds[dayIndex] = null;
+    this.persistAppState();
   }
 
   lockPlan(): boolean {
@@ -343,10 +388,11 @@ export class MealPlannerService {
     }
 
     const weekday = this.nextWeekStart();
+    const mealIds = [...this.draftPlanMealIds];
     const plan: WeeklyPlan = {
       id: this.makeId(),
       weekStart: weekday,
-      mealIds: [...this.draftPlanMealIds],
+      mealIds,
       isLocked: true,
       generatedAt: new Date().toISOString(),
       lockedAt: new Date().toISOString(),
@@ -356,17 +402,16 @@ export class MealPlannerService {
       plan,
       ...this.plans.filter((savedPlan) => savedPlan.weekStart !== weekday),
     ];
-    this.savePlans();
-
     this.meals.forEach((meal) => {
-      if (this.draftPlanMealIds.includes(meal.id)) {
+      if (mealIds.includes(meal.id)) {
         meal.timesUsed += 1;
         meal.updatedAt = new Date().toISOString();
       }
     });
 
-    this.saveMeals();
-    this.clearDraftPlan();
+    this.draftMealIds = Array(7).fill(null);
+    this.draftPlanWeekStart = this.nextWeekStart();
+    this.persistAppState();
     return true;
   }
 
@@ -382,7 +427,9 @@ export class MealPlannerService {
   }
 
   clearDraftPlan(): void {
-    this.draftPlanMealIds = Array.from({ length: 7 }, () => null);
+    this.draftMealIds = Array.from({ length: 7 }, () => null);
+    this.draftPlanWeekStart = this.nextWeekStart();
+    this.persistAppState();
   }
 
   currentWeekStart(): string {
@@ -529,15 +576,17 @@ export class MealPlannerService {
       if (environment.production) {
         localStorage.removeItem(MEAL_STORAGE_KEY);
         localStorage.removeItem(PLAN_STORAGE_KEY);
+        localStorage.removeItem(DRAFT_PLAN_STORAGE_KEY);
         localStorage.removeItem(SETTINGS_STORAGE_KEY);
         this.meals = [];
         this.plans = [];
-        this.draftPlanMealIds = Array(7).fill(null);
+        this.draftMealIds = Array(7).fill(null);
         this.weekStartDay = 3;
         this.maxVegetarianMeals = 3;
       } else if (this.meals.length === 0) {
         this.seedDefaultMealsIfNeeded();
       }
+      this.draftPlanWeekStart = this.nextWeekStart();
       this.persistAppState();
       return;
     }
@@ -571,6 +620,43 @@ export class MealPlannerService {
       settings.maxVegetarianMeals <= 7
     ) {
       this.maxVegetarianMeals = settings.maxVegetarianMeals;
+    }
+
+    this.restoreDraftPlan(data?.draftPlan);
+  }
+
+  private loadDraftPlan(): void {
+    const raw = localStorage.getItem(DRAFT_PLAN_STORAGE_KEY);
+    if (!raw) {
+      this.restoreDraftPlan();
+      return;
+    }
+
+    try {
+      this.restoreDraftPlan(JSON.parse(raw) as HouseholdData['draftPlan']);
+    } catch {
+      this.restoreDraftPlan();
+    }
+  }
+
+  private restoreDraftPlan(
+    draftPlan?: HouseholdData['draftPlan'] | null,
+  ): void {
+    const upcomingWeekStart = this.nextWeekStart();
+    this.draftPlanWeekStart = upcomingWeekStart;
+    this.draftMealIds =
+      draftPlan?.weekStart === upcomingWeekStart &&
+      Array.isArray(draftPlan.mealIds) &&
+      draftPlan.mealIds.length === 7
+        ? [...draftPlan.mealIds]
+        : Array(7).fill(null);
+  }
+
+  private ensureDraftPlanWindow(): void {
+    const upcomingWeekStart = this.nextWeekStart();
+    if (this.draftPlanWeekStart !== upcomingWeekStart) {
+      this.draftMealIds = Array(7).fill(null);
+      this.draftPlanWeekStart = upcomingWeekStart;
     }
   }
 
@@ -624,9 +710,14 @@ export class MealPlannerService {
   }
 
   private persistAppState(): void {
+    this.ensureDraftPlanWindow();
     const appState: HouseholdData = {
       meals: this.meals,
       plans: this.plans,
+      draftPlan: {
+        weekStart: this.draftPlanWeekStart,
+        mealIds: this.draftPlanMealIds,
+      },
       settings: {
         weekStartDay: this.weekStartDay,
         maxVegetarianMeals: this.maxVegetarianMeals,
@@ -636,6 +727,10 @@ export class MealPlannerService {
     if (!this.firestoreEnabled || !this.firestore) {
       localStorage.setItem(MEAL_STORAGE_KEY, JSON.stringify(appState.meals));
       localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(appState.plans));
+      localStorage.setItem(
+        DRAFT_PLAN_STORAGE_KEY,
+        JSON.stringify(appState.draftPlan),
+      );
       localStorage.setItem(
         SETTINGS_STORAGE_KEY,
         JSON.stringify(appState.settings),

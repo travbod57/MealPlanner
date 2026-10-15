@@ -12,20 +12,37 @@
       <ng-container *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
         <a
           *ngIf="getMealIdForDay(index) as mealId; else unplannedDay"
-          class="day-slot clickable"
+          class="day-slot has-choice clickable"
           [class.current-day]="isToday(index)"
           [routerLink]="['/meals', mealId]"
           [queryParams]="{ from: 'this-week' }"
           [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
         >
-          <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
-          <span>{{ mealPlanner.getMealNameById(mealId) }}</span>
+          <div class="day-header">
+            <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+          </div>
+          <span
+            *ngIf="mealPlanner.isVegetarianMeal(mealId)"
+            class="vegetarian-mark"
+            role="img"
+            aria-label="Vegetarian"
+            title="Vegetarian"
+          >V</span>
+          <div class="day-meal">
+            <span class="selected-meal-name">
+              {{ mealPlanner.getMealNameById(mealId) }}
+            </span>
+          </div>
         </a>
 
         <ng-template #unplannedDay>
           <article class="day-slot" [class.current-day]="isToday(index)">
-            <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
-            <span>Not planned</span>
+            <div class="day-header">
+              <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+            </div>
+            <div class="day-meal">
+              <span class="empty-choice">Not planned</span>
+            </div>
           </article>
         </ng-template>
       </ng-container>

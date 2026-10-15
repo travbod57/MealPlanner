@@ -48,12 +48,13 @@ h2 {
 }
 
 .day-slot {
+  position: relative;
   display: flex;
   min-width: 0;
-  min-height: 96px;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
+  min-height: 116px;
+  padding: 14px 12px 12px;
   border: 1px solid #dfe8f4;
   border-radius: 12px;
   background: #f6f8ff;
@@ -62,8 +63,53 @@ h2 {
 }
 
 .day-slot span {
-  color: #465a7d;
   overflow-wrap: anywhere;
+}
+
+.day-slot.has-choice {
+  border-color: #4c9164;
+  background: #edf6ef;
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  padding: 0 30px 9px 0;
+  border-bottom: 1px solid #dfe8f4;
+}
+
+.day-header strong {
+  color: #667386;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.day-slot > .vegetarian-mark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #28613c;
+  font-size: 0.75rem;
+}
+
+.day-meal {
+  min-height: 42px;
+  padding-top: 2px;
+}
+
+.selected-meal-name {
+  display: flex;
+  align-items: center;
+  color: #1d2a39;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.empty-choice {
+  color: #7a8590;
+  font-size: 0.85rem;
 }
 
 .day-slot.clickable {
@@ -73,12 +119,12 @@ h2 {
 
 .day-slot.clickable:hover,
 .day-slot.clickable:focus-visible {
-  border-color: #7a4cc7;
-  background: #efebf8;
+  border-color: #3e7952;
+  background: #e2f0e6;
 }
 
 .day-slot.clickable:focus-visible {
-  outline: 2px solid #7a4cc7;
+  outline: 2px solid #4c9164;
   outline-offset: 2px;
 }
 

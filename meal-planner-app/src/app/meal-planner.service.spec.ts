@@ -1,6 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Meal, MealPlannerService } from './meal-planner.service';
+import {
+  Meal,
+  MealFormState,
+  MealPlannerService,
+} from './meal-planner.service';
 
 describe('MealPlannerService randomizePlan', () => {
   let service: MealPlannerService;
@@ -73,6 +77,48 @@ describe('MealPlannerService randomizePlan', () => {
       jasmine.clock().uninstall();
     }
   });
+
+  it('saves and edits preparation steps as a numbered list', () => {
+    const form: MealFormState = {
+      ...service.editMeal(createMeal('prep-meal', false)),
+      name: 'Prepared meal',
+      category: 'Dinner',
+      vegetarian: false,
+      servings: 4,
+      preparation: 'Chop vegetables\nMarinate overnight',
+    };
+
+    service.saveMeal(form, null);
+
+    const meal = service.meals.find((entry) => entry.name === 'Prepared meal');
+    expect(meal?.preparation).toEqual([
+      'Chop vegetables',
+      'Marinate overnight',
+    ]);
+    expect(meal?.servings).toBe(4);
+    expect(meal && service.editMeal(meal).servings).toBe(4);
+    expect(meal && service.editMeal(meal).preparation).toBe(
+      'Chop vegetables\nMarinate overnight',
+    );
+  });
+
+  it('loads older meals without preparation steps', () => {
+    const {
+      preparation: _preparation,
+      servings: _servings,
+      ...legacyMeal
+    } = createMeal(
+      'legacy-meal',
+      false,
+    );
+    localStorage.setItem('meal-planner-meals', JSON.stringify([legacyMeal]));
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [MealPlannerService] });
+    const freshService = TestBed.inject(MealPlannerService);
+    expect(freshService.meals[0].preparation).toEqual([]);
+    expect(freshService.meals[0].servings).toBe(2);
+  });
 });
 
 function createMeal(id: string, vegetarian: boolean): Meal {
@@ -82,8 +128,10 @@ function createMeal(id: string, vegetarian: boolean): Meal {
     category: 'Dinner',
     mealType: 'recipe',
     vegetarian,
+    servings: 2,
     ingredients: [],
     steps: [],
+    preparation: [],
     createdAt: '',
     updatedAt: '',
     timesUsed: 0,

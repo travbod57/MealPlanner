@@ -48,6 +48,10 @@
             <dt>Vegetarian</dt>
             <dd>{{ meal.vegetarian == null ? 'Not set' : meal.vegetarian ? 'Yes' : 'No' }}</dd>
           </div>
+          <div class="meal-fact">
+            <dt>Servings</dt>
+            <dd>{{ meal.servings }}</dd>
+          </div>
           <div class="meal-fact times-used">
             <dt>Times used</dt>
             <dd>{{ meal.timesUsed }}</dd>
@@ -55,7 +59,7 @@
         </dl>
 
         <button
-          *ngIf="meal.ingredients?.length || meal.steps?.length"
+          *ngIf="meal.ingredients?.length || meal.preparation?.length || meal.steps?.length"
           class="details-toggle"
           type="button"
           [attr.aria-expanded]="isDetailsExpanded(meal.id)"
@@ -65,7 +69,7 @@
           <mat-icon aria-hidden="true">
             {{ isDetailsExpanded(meal.id) ? 'expand_less' : 'expand_more' }}
           </mat-icon>
-          {{ isDetailsExpanded(meal.id) ? 'Hide recipe details' : 'Show ingredients and steps' }}
+          {{ isDetailsExpanded(meal.id) ? 'Hide recipe details' : 'Show ingredients, preparation and steps' }}
         </button>
 
         <div
@@ -79,6 +83,13 @@
             <ul>
               <li *ngFor="let ingredient of meal.ingredients">{{ ingredient }}</li>
             </ul>
+          </div>
+
+          <div *ngIf="meal.preparation?.length" class="info-block">
+            <strong>Preparation</strong>
+            <ol>
+              <li *ngFor="let step of meal.preparation">{{ step }}</li>
+            </ol>
           </div>
 
           <div *ngIf="meal.steps?.length" class="info-block">

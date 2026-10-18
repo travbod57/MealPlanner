@@ -4,6 +4,7 @@ import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 
 export type MealType = 'recipe' | 'takeaway' | 'eatingOut' | 'leftovers';
+export type MealServings = 2 | 4;
 
 export interface Meal {
   id: string;
@@ -11,8 +12,10 @@ export interface Meal {
   category: string;
   mealType: MealType;
   vegetarian: boolean | null;
+  servings: MealServings;
   ingredients: string[];
   steps: string[];
+  preparation: string[];
   createdAt: string;
   updatedAt: string;
   timesUsed: number;
@@ -36,8 +39,10 @@ export interface MealFormState {
   category: string;
   mealType: MealType;
   vegetarian: boolean | null;
+  servings: MealServings;
   ingredients: string;
   steps: string;
+  preparation: string;
   notes: string;
   customTitle: string;
   starRating: number;
@@ -229,8 +234,10 @@ export class MealPlannerService {
       category: form.category,
       mealType: form.mealType,
       vegetarian: form.vegetarian,
+      servings: form.servings === 4 ? 4 : 2,
       ingredients: this.parseList(form.ingredients),
       steps: this.parseList(form.steps),
+      preparation: this.parseList(form.preparation),
       createdAt: editingMealId
         ? (this.meals.find((meal) => meal.id === editingMealId)?.createdAt ??
           new Date().toISOString())
@@ -271,8 +278,10 @@ export class MealPlannerService {
       category: meal.category,
       mealType: meal.mealType,
       vegetarian: meal.vegetarian ?? false,
+      servings: meal.servings === 4 ? 4 : 2,
       ingredients: meal.ingredients.join(', '),
       steps: meal.steps.join('\n'),
+      preparation: meal.preparation.join('\n'),
       notes: meal.notes,
       customTitle: meal.customTitle ?? '',
       starRating: meal.starRating,
@@ -461,8 +470,10 @@ export class MealPlannerService {
         category: 'Dinner',
         mealType: 'recipe',
         vegetarian: false,
+        servings: 2,
         ingredients: ['spaghetti', 'mince', 'tomato sauce', 'onion'],
         steps: ['Cook the pasta', 'Brown the mince', 'Add sauce and simmer'],
+        preparation: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         timesUsed: 0,
@@ -478,8 +489,10 @@ export class MealPlannerService {
         category: 'Dinner',
         mealType: 'recipe',
         vegetarian: false,
+        servings: 2,
         ingredients: ['chicken', 'veg', 'soy sauce'],
         steps: ['Cook chicken', 'Add veg', 'Toss with sauce'],
+        preparation: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         timesUsed: 0,
@@ -495,8 +508,10 @@ export class MealPlannerService {
         category: 'Dinner',
         mealType: 'takeaway',
         vegetarian: false,
+        servings: 2,
         ingredients: [],
         steps: [],
+        preparation: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         timesUsed: 0,
@@ -512,8 +527,10 @@ export class MealPlannerService {
         category: 'Dinner',
         mealType: 'leftovers',
         vegetarian: false,
+        servings: 2,
         ingredients: [],
         steps: [],
+        preparation: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         timesUsed: 0,
@@ -547,6 +564,8 @@ export class MealPlannerService {
     this.meals = storedMeals.map((meal) => ({
       ...meal,
       vegetarian: meal.vegetarian ?? null,
+      servings: meal.servings === 4 ? 4 : 2,
+      preparation: meal.preparation ?? [],
     }));
   }
 
@@ -587,6 +606,8 @@ export class MealPlannerService {
     this.meals = loadedMeals.map((meal) => ({
       ...meal,
       vegetarian: meal.vegetarian ?? null,
+      servings: meal.servings === 4 ? 4 : 2,
+      preparation: meal.preparation ?? [],
     }));
     this.plans = loadedPlans;
 

@@ -66,6 +66,14 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Number of servings</mat-label>
+          <mat-select [(ngModel)]="mealForm.servings" name="servings">
+            <mat-option [value]="2">2 servings</mat-option>
+            <mat-option [value]="4">4 servings</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Rating out of 10</mat-label>
           <mat-select [(ngModel)]="mealForm.starRating" name="starRating">
             <mat-option *ngFor="let rating of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" [value]="rating">{{ rating }}</mat-option>
@@ -98,11 +106,21 @@
         </mat-form-field>
 
         <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Preparation</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="mealForm.preparation"
+            name="preparation"
+            rows="4"
+            placeholder="One step per line"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
           <mat-label>Recipe steps</mat-label>
           <textarea
             matInput
             [(ngModel)]="mealForm.steps"
-            #stepsControl="ngModel"
             name="steps"
             rows="4"
             placeholder="One step per line"

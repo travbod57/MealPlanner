@@ -60,6 +60,28 @@ describe('MealPlannerService randomizePlan', () => {
     expect(new Set(plannedMealIds).size).toBe(7);
   });
 
+  it('reorders meals into the dropped day and persists the shifted plan', () => {
+    service.meals.forEach((meal, index) => {
+      service.setDraftPlanMeal(index, meal.id);
+    });
+
+    service.reorderDraftPlan(0, 3);
+
+    expect(service.draftPlanMealIds).toEqual([
+      service.meals[1].id,
+      service.meals[2].id,
+      service.meals[3].id,
+      service.meals[0].id,
+      null,
+      null,
+      null,
+    ]);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-draft-plan') ?? '{}')
+        .mealIds,
+    ).toEqual(service.draftPlanMealIds);
+  });
+
   it('moves the saved draft into This Week when its week begins', () => {
     const upcomingWeekStart = service.nextWeekStart();
     const chosenMealId = service.meals[0].id;

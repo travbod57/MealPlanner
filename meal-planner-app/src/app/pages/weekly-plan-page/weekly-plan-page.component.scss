@@ -95,7 +95,7 @@ h2 {
   gap: 12px;
 }
 
-.day-slot {
+.day-card {
   position: relative;
   background: #f6f8ff;
   border: 1px solid #dfe8f4;
@@ -104,11 +104,6 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.day-slot.has-choice {
-  background: #edf6ef;
-  border-color: #4c9164;
 }
 
 .day-header {
@@ -124,7 +119,7 @@ h2 {
   font-weight: 700;
 }
 
-.day-slot > .vegetarian-mark {
+.day-card > .vegetarian-mark {
   position: absolute;
   top: 10px;
   right: 10px;

@@ -1,4 +1,4 @@
-<div class="page-shell">
+<div class="page-shell weekly-plan-page">
   <header class="topbar">
     <div>
       <p class="eyebrow">Meal Planner</p>
@@ -20,47 +20,75 @@
       Randomizer maximum: {{ mealPlanner.maxVegetarianMeals }} vegetarian
       {{ mealPlanner.maxVegetarianMeals === 1 ? 'meal' : 'meals' }}
     </p>
-    <div class="week-plan-grid">
+    <p class="drag-hint">
+      Drag a meal to another day. The meals in between will shift to keep the
+      dates in order.
+    </p>
+    <div
+      class="week-plan-grid"
+      [class.is-dragging]="isDraggingMeal"
+    >
       <div
         class="day-slot"
         *ngFor="let day of mealPlanner.DAY_LABELS; let index = index"
+        cdkDropList
+        [id]="dayDropListIds[index]"
+        [cdkDropListData]="index"
+        [cdkDropListConnectedTo]="dayDropListIds"
+        [cdkDropListAutoScrollDisabled]="true"
+        (cdkDropListEntered)="onDayDragEntered($event)"
+        (cdkDropListExited)="onDayDragExited($event)"
+        (cdkDropListDropped)="dropMeal($event)"
+        [class.drop-target]="isDraggingMeal"
+        [class.active-drop-target]="activeDropIndex === index"
         [class.has-choice]="!!mealPlanner.draftPlanMealIds[index]"
       >
-        <div class="day-header">
-          <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+        <div
+          class="day-card"
+          cdkDrag
+          cdkDragPreviewClass="weekly-plan-drag-preview"
+          [cdkDragData]="mealPlanner.draftPlanMealIds[index]"
+          [cdkDragDisabled]="!mealPlanner.draftPlanMealIds[index]"
+          (cdkDragStarted)="onMealDragStarted()"
+          (cdkDragEnded)="onMealDragEnded()"
+        >
+          <div class="day-header">
+            <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
+          </div>
+          <span
+            *ngIf="mealPlanner.isVegetarianMeal(mealPlanner.draftPlanMealIds[index])"
+            class="vegetarian-mark"
+            role="img"
+            aria-label="Vegetarian"
+            title="Vegetarian"
+          >V</span>
+          <div class="day-meal">
+            <a
+              *ngIf="mealPlanner.draftPlanMealIds[index] as mealId"
+              class="selected-meal-name"
+              [routerLink]="['/meals', mealId]"
+              [queryParams]="{ from: 'plan-next-week' }"
+            >
+              {{ getMealNameById(mealId) }}
+            </a>
+            <span *ngIf="!mealPlanner.draftPlanMealIds[index]" class="empty-choice">No meal selected</span>
+          </div>
+          <div class="day-actions">
+            <a class="choose-action" [routerLink]="['/plan-next-week', index, 'choose']">
+              {{ mealPlanner.draftPlanMealIds[index] ? 'Change' : 'Choose' }}
+            </a>
+            <button
+              *ngIf="mealPlanner.draftPlanMealIds[index]"
+              class="clear-choice-action"
+              type="button"
+              [attr.aria-label]="'Clear ' + day + ' meal choice'"
+              (click)="clearMealChoice(index)"
+            >
+              Clear
+            </button>
+          </div>
         </div>
-        <span
-          *ngIf="mealPlanner.isVegetarianMeal(mealPlanner.draftPlanMealIds[index])"
-          class="vegetarian-mark"
-          role="img"
-          aria-label="Vegetarian"
-          title="Vegetarian"
-        >V</span>
-        <div class="day-meal">
-          <a
-            *ngIf="mealPlanner.draftPlanMealIds[index] as mealId"
-            class="selected-meal-name"
-            [routerLink]="['/meals', mealId]"
-            [queryParams]="{ from: 'plan-next-week' }"
-          >
-            {{ getMealNameById(mealId) }}
-          </a>
-          <span *ngIf="!mealPlanner.draftPlanMealIds[index]" class="empty-choice">No meal selected</span>
-        </div>
-        <div class="day-actions">
-          <a class="choose-action" [routerLink]="['/plan-next-week', index, 'choose']">
-            {{ mealPlanner.draftPlanMealIds[index] ? 'Change' : 'Choose' }}
-          </a>
-          <button
-            *ngIf="mealPlanner.draftPlanMealIds[index]"
-            class="clear-choice-action"
-            type="button"
-            [attr.aria-label]="'Clear ' + day + ' meal choice'"
-            (click)="clearMealChoice(index)"
-          >
-            Clear
-          </button>
-        </div>
+        <span *ngIf="activeDropIndex === index" class="drop-target-label">Drop here</span>
       </div>
     </div>
 

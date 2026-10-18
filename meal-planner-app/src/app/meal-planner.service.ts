@@ -404,6 +404,27 @@ export class MealPlannerService {
     this.persistAppState();
   }
 
+  reorderDraftPlan(fromIndex: number, toIndex: number): void {
+    if (
+      !Number.isInteger(fromIndex) ||
+      !Number.isInteger(toIndex) ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= 7 ||
+      toIndex >= 7 ||
+      fromIndex === toIndex
+    ) {
+      return;
+    }
+
+    this.ensureDraftPlanWindow();
+    const reorderedMealIds = [...this.draftMealIds];
+    const [movedMealId] = reorderedMealIds.splice(fromIndex, 1);
+    reorderedMealIds.splice(toIndex, 0, movedMealId ?? null);
+    this.draftMealIds = reorderedMealIds;
+    this.persistAppState();
+  }
+
   clearDraftPlanMeal(dayIndex: number): void {
     if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
       return;

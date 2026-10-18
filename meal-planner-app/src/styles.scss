@@ -37,3 +37,85 @@ body {
 .meal-title-link:focus-visible {
 	text-decoration: underline;
 }
+
+.weekly-plan-page .drag-hint {
+	margin: -6px 0 14px;
+	color: #53627b;
+	font-size: 0.9rem;
+}
+
+.weekly-plan-page .week-plan-grid {
+	min-height: 170px;
+}
+
+.weekly-plan-page .day-slot {
+	position: relative;
+	display: grid;
+	grid-template-areas: "tile";
+	min-width: 0;
+	border: 2px solid transparent;
+	border-radius: 14px;
+	transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.weekly-plan-page .day-slot > .day-card {
+	grid-area: tile;
+}
+
+.weekly-plan-page .day-slot.drop-target {
+	border-color: #a985df;
+	border-style: dashed;
+	background: rgba(122, 76, 199, 0.08);
+}
+
+.weekly-plan-page .day-slot.active-drop-target {
+	border: 3px solid #5c2fa5;
+	background: #ede2ff;
+	box-shadow: 0 0 0 3px rgba(122, 76, 199, 0.2);
+}
+
+.weekly-plan-page .day-card {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 170px;
+}
+
+.weekly-plan-page .day-card.cdk-drag {
+	cursor: grab;
+}
+
+.weekly-plan-page .day-card.cdk-drag:active {
+	cursor: grabbing;
+}
+
+.weekly-plan-page .day-slot.has-choice .day-card {
+	background: #edf6ef;
+	border-color: #4c9164;
+}
+
+.weekly-plan-page .cdk-drag-placeholder {
+	opacity: 0.18;
+}
+
+.weekly-plan-page .drop-target-label {
+	position: absolute;
+	z-index: 1;
+	right: 8px;
+	bottom: 8px;
+	left: 8px;
+	padding: 6px 8px;
+	border-radius: 6px;
+	background: #5c2fa5;
+	color: #fff;
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-align: center;
+	pointer-events: none;
+}
+
+.weekly-plan-drag-preview {
+	box-sizing: border-box;
+	border-radius: 12px;
+	box-shadow: 0 14px 28px rgba(28, 35, 54, 0.22);
+	opacity: 0.96;
+}

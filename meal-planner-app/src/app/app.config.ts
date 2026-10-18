@@ -1,7 +1,16 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import {
+  FirebaseApp,
+  initializeApp,
+  provideFirebaseApp,
+} from '@angular/fire/app';
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  provideFirestore,
+} from '@angular/fire/firestore';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { environment } from '../environments/environment';
@@ -10,7 +19,13 @@ import { routes } from './app.routes';
 const firebaseProviders = environment.useFirestore
   ? [
       provideFirebaseApp(() => initializeApp(environment.firebase)),
-      provideFirestore(() => getFirestore()),
+      provideFirestore(() =>
+        initializeFirestore(inject(FirebaseApp), {
+          localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager(),
+          }),
+        }),
+      ),
     ]
   : [];
 

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 import { buildInfo } from './build-info';
+import { MealPlannerService } from './meal-planner.service';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +21,5 @@ import { buildInfo } from './build-info';
 })
 export class AppComponent {
   readonly buildInfo = buildInfo;
+  readonly mealPlanner = inject(MealPlannerService);
 }

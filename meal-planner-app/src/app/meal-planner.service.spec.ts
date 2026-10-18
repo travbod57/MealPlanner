@@ -82,6 +82,32 @@ describe('MealPlannerService randomizePlan', () => {
     ).toEqual(service.draftPlanMealIds);
   });
 
+  it('restores meals, plans, settings, and the draft after a reload', () => {
+    const mealId = service.meals[0].id;
+    service.setDraftPlanMeal(2, mealId);
+    service.setWeekStartDay(1);
+    service.plans = [
+      {
+        id: 'saved-plan',
+        weekStart: '2026-10-05',
+        mealIds: [mealId, null, null, null, null, null, null],
+        generatedAt: '2026-10-01T12:00:00.000Z',
+      },
+    ];
+    service.setMaxVegetarianMeals(5);
+    const expectedDraft = [...service.draftPlanMealIds];
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [MealPlannerService] });
+    const restoredService = TestBed.inject(MealPlannerService);
+
+    expect(restoredService.meals.map((meal) => meal.id)).toContain(mealId);
+    expect(restoredService.draftPlanMealIds).toEqual(expectedDraft);
+    expect(restoredService.weekStartDay).toBe(1);
+    expect(restoredService.maxVegetarianMeals).toBe(5);
+    expect(restoredService.plans).toEqual(service.plans);
+  });
+
   it('moves the saved draft into This Week when its week begins', () => {
     const upcomingWeekStart = service.nextWeekStart();
     const chosenMealId = service.meals[0].id;

@@ -41,6 +41,10 @@ When the toggle is off, the app continues to use local browser storage so the pr
 ### Single-household Firestore model
 
 The cloud version stores a single document at `households/default-household`.
+The app waits for that document to load before enabling its pages and uses
+Firestore's persistent multi-tab cache so pending writes survive browser
+refreshes. If the document cannot be loaded, the app reports the error instead
+of saving an empty state over the existing data.
 
 ```json
 {

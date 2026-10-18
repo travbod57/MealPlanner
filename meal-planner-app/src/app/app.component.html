@@ -14,7 +14,17 @@
   </header>
 
   <main class="content-shell">
-    <router-outlet></router-outlet>
+    <section *ngIf="mealPlanner.loadError as loadError" class="data-status error" role="alert">
+      <h1>Saved data unavailable</h1>
+      <p>{{ loadError }}</p>
+    </section>
+    <section *ngIf="!mealPlanner.isReady && !mealPlanner.loadError" class="data-status" role="status">
+      <p>Loading saved meals and plans…</p>
+    </section>
+    <section *ngIf="mealPlanner.saveError as saveError" class="data-status error" role="alert">
+      <p>{{ saveError }}</p>
+    </section>
+    <router-outlet *ngIf="mealPlanner.isReady"></router-outlet>
   </main>
 
   <div class="build-badge" aria-label="Build information">

@@ -82,8 +82,13 @@ export class MealPlannerService {
   plans: WeeklyPlan[] = [];
   private draftMealIds: Array<string | null> = Array(7).fill(null);
   private draftPlanWeekStart = '';
+  private firestoreWriteQueue: Promise<void> = Promise.resolve();
+  private pendingFirestorePersistence = false;
   weekStartDay = 3;
   maxVegetarianMeals = 3;
+  isReady = false;
+  loadError: string | null = null;
+  saveError: string | null = null;
 
   private readonly firestore = inject(Firestore, { optional: true });
   private readonly firestoreEnabled =
@@ -95,7 +100,19 @@ export class MealPlannerService {
   constructor() {
     if (this.firestoreEnabled) {
       console.info('MealPlannerService: using Firestore persistence');
-      void this.loadFirestoreState();
+      void this.loadFirestoreState()
+        .then(() => {
+          this.isReady = true;
+          if (this.pendingFirestorePersistence) {
+            this.pendingFirestorePersistence = false;
+            this.persistAppState();
+          }
+        })
+        .catch((error: unknown) => {
+          console.error('Firestore state load failed.', error);
+          this.loadError =
+            'Saved data could not be loaded from Firestore. It has not been changed. Check your connection and refresh to try again.';
+        });
       return;
     }
 
@@ -105,6 +122,7 @@ export class MealPlannerService {
     this.loadPlans();
     this.loadDraftPlan();
     this.seedDefaultMealsIfNeeded();
+    this.isReady = true;
   }
 
   readonly WEEKDAY_OPTIONS = WEEKDAY_OPTIONS;
@@ -599,21 +617,7 @@ export class MealPlannerService {
       doc(this.firestore, 'households', this.householdKey),
     );
     if (!snapshot.exists()) {
-      if (environment.production) {
-        localStorage.removeItem(MEAL_STORAGE_KEY);
-        localStorage.removeItem(PLAN_STORAGE_KEY);
-        localStorage.removeItem(DRAFT_PLAN_STORAGE_KEY);
-        localStorage.removeItem(SETTINGS_STORAGE_KEY);
-        this.meals = [];
-        this.plans = [];
-        this.draftMealIds = Array(7).fill(null);
-        this.weekStartDay = 3;
-        this.maxVegetarianMeals = 3;
-      } else if (this.meals.length === 0) {
-        this.seedDefaultMealsIfNeeded();
-      }
       this.draftPlanWeekStart = this.nextWeekStart();
-      this.persistAppState();
       return;
     }
 
@@ -649,7 +653,7 @@ export class MealPlannerService {
     ) {
       this.maxVegetarianMeals = settings.maxVegetarianMeals;
     }
-
+    this.restoreDraftPlan(data?.draftPlan);
     this.restoreDraftPlan(data?.draftPlan);
   }
 
@@ -790,6 +794,11 @@ export class MealPlannerService {
   }
 
   private persistAppState(): void {
+    if (this.firestoreEnabled && !this.isReady) {
+      this.pendingFirestorePersistence = true;
+      return;
+    }
+
     this.ensureDraftPlanWindow();
     const appState: HouseholdData = {
       meals: this.meals,
@@ -818,12 +827,39 @@ export class MealPlannerService {
       return;
     }
 
-    void setDoc(
-      doc(this.firestore, 'households', this.householdKey),
-      appState,
-    ).catch((error) => {
-      console.error('Firestore write failed.', error);
-    });
+    const stateToSave: HouseholdData = {
+      ...appState,
+      meals: appState.meals.map((meal) => ({
+        ...meal,
+        ingredients: [...meal.ingredients],
+        steps: [...meal.steps],
+        preparation: [...meal.preparation],
+      })),
+      plans: appState.plans.map((plan) => ({
+        ...plan,
+        mealIds: [...plan.mealIds],
+      })),
+      draftPlan: {
+        ...appState.draftPlan,
+        mealIds: [...appState.draftPlan.mealIds],
+      },
+      settings: { ...appState.settings },
+    };
+    this.firestoreWriteQueue = this.firestoreWriteQueue
+      .then(() =>
+        setDoc(
+          doc(this.firestore!, 'households', this.householdKey),
+          stateToSave,
+        ),
+      )
+      .then(() => {
+        this.saveError = null;
+      })
+      .catch((error: unknown) => {
+        console.error('Firestore write failed.', error);
+        this.saveError =
+          'Changes could not be saved to Firestore. Keep this page open and check your connection before refreshing.';
+      });
   }
 
   private shuffle<T>(items: T[]): T[] {

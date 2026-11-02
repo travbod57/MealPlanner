@@ -343,7 +343,10 @@ export class MealPlannerService {
   }
 
   randomizePlan(): void {
-    if (!this.meals.length) {
+    const randomizableMeals = this.meals.filter(
+      (meal) => meal.mealType !== 'leftovers',
+    );
+    if (!randomizableMeals.length) {
       return;
     }
 
@@ -359,10 +362,10 @@ export class MealPlannerService {
       this.maxVegetarianMeals - this.getDraftVegetarianCount(),
     );
     const vegetarianMeals = this.shuffle(
-      this.meals.filter((meal) => meal.vegetarian !== false),
+      randomizableMeals.filter((meal) => meal.vegetarian !== false),
     );
     const otherMeals = this.shuffle(
-      this.meals.filter((meal) => meal.vegetarian === false),
+      randomizableMeals.filter((meal) => meal.vegetarian === false),
     );
     const assignUniqueMeals = (
       meals: Meal[],
@@ -393,7 +396,7 @@ export class MealPlannerService {
     ];
     remainingDays = assignUniqueMeals(otherMeals, remainingDays);
 
-    if (this.meals.length < 7 && otherMeals.length > 0) {
+    if (randomizableMeals.length < 7 && otherMeals.length > 0) {
       remainingDays.forEach((dayIndex, index) => {
         randomizedMealIds[dayIndex] = otherMeals[index % otherMeals.length].id;
       });
@@ -401,7 +404,7 @@ export class MealPlannerService {
     }
 
     if (
-      this.meals.length < 7 &&
+      randomizableMeals.length < 7 &&
       remainingDays.length > 0 &&
       vegetarianMeals.length > 0
     ) {

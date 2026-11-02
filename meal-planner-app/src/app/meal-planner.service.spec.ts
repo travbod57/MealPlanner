@@ -60,6 +60,20 @@ describe('MealPlannerService randomizePlan', () => {
     expect(new Set(plannedMealIds).size).toBe(7);
   });
 
+  it('does not add leftovers when randomizing the plan', () => {
+    service.meals.push({
+      ...createMeal('leftovers-meal', false),
+      mealType: 'leftovers',
+    });
+
+    service.randomizePlan();
+
+    const plannedMeals = service.draftPlanMealIds
+      .filter((mealId): mealId is string => Boolean(mealId))
+      .map((mealId) => service.meals.find((meal) => meal.id === mealId));
+    expect(plannedMeals.every((meal) => meal?.mealType !== 'leftovers')).toBeTrue();
+  });
+
   it('shuffles draft meals across the seven days and persists the new order', () => {
     service.meals.forEach((meal, index) => {
       service.setDraftPlanMeal(index, meal.id);

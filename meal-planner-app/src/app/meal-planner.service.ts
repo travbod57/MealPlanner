@@ -443,6 +443,33 @@ export class MealPlannerService {
     this.persistAppState();
   }
 
+  reorderThisWeekPlan(fromIndex: number, toIndex: number): void {
+    if (
+      !Number.isInteger(fromIndex) ||
+      !Number.isInteger(toIndex) ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= 7 ||
+      toIndex >= 7 ||
+      fromIndex === toIndex
+    ) {
+      return;
+    }
+
+    const currentPlan = this.thisWeekPlan;
+    if (!currentPlan) {
+      return;
+    }
+
+    const mealIds = [...currentPlan.mealIds];
+    const [movedMealId] = mealIds.splice(fromIndex, 1);
+    mealIds.splice(toIndex, 0, movedMealId ?? null);
+    this.plans = this.plans.map((plan) =>
+      plan.id === currentPlan.id ? { ...plan, mealIds } : plan,
+    );
+    this.persistAppState();
+  }
+
   clearDraftPlanMeal(dayIndex: number): void {
     if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
       return;

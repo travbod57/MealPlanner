@@ -38,7 +38,8 @@ body {
 	text-decoration: underline;
 }
 
-.weekly-plan-page .drag-hint {
+.weekly-plan-page .drag-hint,
+.this-week-page .drag-hint {
 	margin: -6px 0 14px;
 	color: #53627b;
 	font-size: 0.9rem;
@@ -58,25 +59,38 @@ body {
 	transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
 }
 
-.weekly-plan-page .day-slot > .day-card {
+.this-week-page .day-slot {
+	position: relative;
+	display: grid;
+	grid-template-areas: "tile";
+}
+
+.weekly-plan-page .day-slot > .day-card,
+.this-week-page .day-slot > .day-card {
 	grid-area: tile;
 }
 
-.weekly-plan-page .day-slot.drop-target {
+.weekly-plan-page .day-slot.drop-target,
+.this-week-page .day-slot.drop-target {
 	border-color: #a985df;
 	border-style: dashed;
 	background: rgba(122, 76, 199, 0.08);
 }
 
-.weekly-plan-page .day-slot.active-drop-target {
+.weekly-plan-page .day-slot.active-drop-target,
+.this-week-page .day-slot.active-drop-target {
 	border: 3px solid #5c2fa5;
 	background: #ede2ff;
 	box-shadow: 0 0 0 3px rgba(122, 76, 199, 0.2);
 }
 
-.weekly-plan-page .day-card {
+.weekly-plan-page .day-card,
+.this-week-page .day-card {
 	box-sizing: border-box;
 	width: 100%;
+}
+
+.weekly-plan-page .day-card {
 	min-height: 170px;
 }
 
@@ -93,24 +107,38 @@ body {
 	border-color: #4c9164;
 }
 
-.weekly-plan-page .cdk-drag-placeholder {
+.weekly-plan-page .cdk-drag-placeholder,
+.this-week-page .cdk-drag-placeholder {
 	opacity: 0.18;
 }
 
-.weekly-plan-page .drop-target-label {
+.weekly-plan-page .drop-target-label,
+.this-week-page .drop-target-label {
 	position: absolute;
 	z-index: 1;
-	right: 8px;
-	bottom: 8px;
-	left: 8px;
-	padding: 6px 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: 36px;
+	padding: 8px 12px;
 	border-radius: 6px;
 	background: #5c2fa5;
 	color: #fff;
-	font-size: 0.8rem;
 	font-weight: 700;
-	text-align: center;
 	pointer-events: none;
+}
+
+.weekly-plan-page .drop-target-label {
+	right: 13px;
+	bottom: 13px;
+	left: 13px;
+}
+
+.this-week-page .drop-target-label {
+	right: 12px;
+	bottom: 12px;
+	left: 12px;
 }
 
 .weekly-plan-drag-preview {

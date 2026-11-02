@@ -82,6 +82,43 @@ describe('MealPlannerService randomizePlan', () => {
     ).toEqual(service.draftPlanMealIds);
   });
 
+  it('reorders This Week meals and persists the shifted plan', () => {
+    const mealIds = [
+      service.meals[0].id,
+      service.meals[1].id,
+      service.meals[2].id,
+      service.meals[3].id,
+      null,
+      null,
+      null,
+    ];
+    service.plans = [
+      {
+        id: 'current-plan',
+        weekStart: service.currentWeekStart(),
+        mealIds,
+        generatedAt: '2026-10-01T12:00:00.000Z',
+      },
+    ];
+
+    service.reorderThisWeekPlan(0, 3);
+
+    const expectedMealIds = [
+      service.meals[1].id,
+      service.meals[2].id,
+      service.meals[3].id,
+      service.meals[0].id,
+      null,
+      null,
+      null,
+    ];
+    expect(service.thisWeekPlan?.mealIds).toEqual(expectedMealIds);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-plans') ?? '[]')[0]
+        .mealIds,
+    ).toEqual(expectedMealIds);
+  });
+
   it('restores meals, plans, settings, and the draft after a reload', () => {
     const mealId = service.meals[0].id;
     service.setDraftPlanMeal(2, mealId);

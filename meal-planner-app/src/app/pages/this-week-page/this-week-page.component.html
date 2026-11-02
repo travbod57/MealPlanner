@@ -1,4 +1,4 @@
-<div class="page-shell">
+<div class="page-shell this-week-page">
   <header class="topbar">
     <div>
       <p class="eyebrow">Meal Planner</p>
@@ -8,12 +8,35 @@
 
   <section class="panel">
     <h2>This week's dinners</h2>
-    <div class="week-plan-grid">
-      <ng-container *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
+    <p class="drag-hint">
+      Drag a meal to another day. The meals in between will shift to keep the
+      dates in order.
+    </p>
+    <div class="week-plan-grid" [class.is-dragging]="isDraggingMeal">
+      <div
+        class="day-slot"
+        *ngFor="let day of mealPlanner.DAY_LABELS; let index = index"
+        cdkDropList
+        [id]="dayDropListIds[index]"
+        [cdkDropListData]="index"
+        [cdkDropListConnectedTo]="dayDropListIds"
+        [cdkDropListAutoScrollDisabled]="true"
+        (cdkDropListEntered)="onDayDragEntered($event)"
+        (cdkDropListExited)="onDayDragExited($event)"
+        (cdkDropListDropped)="dropMeal($event)"
+        [class.drop-target]="isDraggingMeal"
+        [class.active-drop-target]="activeDropIndex === index"
+        [class.has-choice]="!!getMealIdForDay(index)"
+        [class.current-day]="isToday(index)"
+      >
         <a
           *ngIf="getMealIdForDay(index) as mealId; else unplannedDay"
-          class="day-slot has-choice clickable"
-          [class.current-day]="isToday(index)"
+          class="day-card clickable"
+          cdkDrag
+          cdkDragPreviewClass="weekly-plan-drag-preview"
+          [cdkDragData]="mealId"
+          (cdkDragStarted)="onMealDragStarted()"
+          (cdkDragEnded)="onMealDragEnded()"
           [routerLink]="['/meals', mealId]"
           [queryParams]="{ from: 'this-week' }"
           [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
@@ -36,7 +59,7 @@
         </a>
 
         <ng-template #unplannedDay>
-          <article class="day-slot" [class.current-day]="isToday(index)">
+          <article class="day-card">
             <div class="day-header">
               <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
             </div>
@@ -45,7 +68,8 @@
             </div>
           </article>
         </ng-template>
-      </ng-container>
+        <span *ngIf="activeDropIndex === index" class="drop-target-label">Drop here</span>
+      </div>
     </div>
   </section>
 </div>

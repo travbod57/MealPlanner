@@ -9,20 +9,29 @@
   <section class="panel">
     <form (ngSubmit)="onSubmitMeal()" class="meal-form" novalidate>
       <div class="field-grid">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Meal name</mat-label>
-          <input
-            matInput
-            [(ngModel)]="mealForm.name"
-            #mealNameControl="ngModel"
-            name="mealName"
-            type="text"
-            required
-          />
-          <mat-error *ngIf="(mealNameControl.invalid || !mealNameControl.value?.trim()) && (mealNameControl.touched || submitted)">
-            A meal name is required.
-          </mat-error>
-        </mat-form-field>
+        <div>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Meal name</mat-label>
+            <input
+              matInput
+              [(ngModel)]="mealForm.name"
+              #mealNameControl="ngModel"
+              name="mealName"
+              type="text"
+              required
+            />
+            <mat-error *ngIf="(mealNameControl.invalid || !mealNameControl.value?.trim()) && (mealNameControl.touched || submitted)">
+              A meal name is required.
+            </mat-error>
+          </mat-form-field>
+          <p
+            *ngIf="hasDuplicateMealName && (mealNameControl.touched || submitted)"
+            class="validation-error"
+            role="alert"
+          >
+            A meal with this name already exists.
+          </p>
+        </div>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Category</mat-label>

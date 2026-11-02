@@ -24,7 +24,11 @@
     </div>
     <div class="header-actions">
       <a class="secondary-button" routerLink="/meals">Meal Library</a>
-      <a class="primary-button" [routerLink]="['/meals', savedMeal.id, 'edit']">Edit meal</a>
+      <a
+        class="primary-button"
+        [routerLink]="['/meals', savedMeal.id, 'edit']"
+        [queryParams]="{ returnUrl: editReturnUrl }"
+      >Edit meal</a>
     </div>
   </header>
 

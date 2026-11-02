@@ -55,7 +55,9 @@ h2 {
 }
 
 .randomize-btn,
-.secondary-button {
+.topbar-actions .secondary-button {
+  box-sizing: border-box;
+  min-height: 46px;
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
@@ -67,6 +69,11 @@ h2 {
   padding: 12px 18px;
   font-size: 1.05rem;
   border: none;
+}
+
+.topbar-actions .secondary-button {
+  padding: 12px 16px;
+  font-size: 1.05rem;
 }
 
 .secondary-button {

@@ -187,6 +187,18 @@ describe('MealPlannerService randomizePlan', () => {
     );
   });
 
+  it('prevents duplicate meal names regardless of case or surrounding spaces', () => {
+    const existingMeal = service.meals[0];
+    const duplicateForm = {
+      ...service.editMeal(existingMeal),
+      name: `  ${existingMeal.name.toUpperCase()}  `,
+    };
+
+    expect(service.saveMeal(duplicateForm, null)).toBeFalse();
+    expect(service.meals.length).toBe(4);
+    expect(service.isMealNameTaken(existingMeal.name, existingMeal.id)).toBeFalse();
+  });
+
   it('loads older meals without preparation steps', () => {
     const {
       preparation: _preparation,

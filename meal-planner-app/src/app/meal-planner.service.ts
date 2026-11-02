@@ -235,15 +235,16 @@ export class MealPlannerService {
     );
   }
 
-  saveMeal(form: MealFormState, editingMealId: string | null): void {
+  saveMeal(form: MealFormState, editingMealId: string | null): boolean {
     const name = form.name.trim();
     if (
       !name ||
+      this.isMealNameTaken(name, editingMealId) ||
       !form.category.trim() ||
       typeof form.vegetarian !== 'boolean' ||
       (form.mealType === 'leftovers' && !form.customTitle.trim())
     ) {
-      return;
+      return false;
     }
 
     const payload: Meal = {
@@ -287,6 +288,16 @@ export class MealPlannerService {
     }
 
     this.saveMeals();
+    return true;
+  }
+
+  isMealNameTaken(name: string, excludingMealId: string | null = null): boolean {
+    const normalizedName = name.trim().toLocaleLowerCase();
+    return this.meals.some(
+      (meal) =>
+        meal.id !== excludingMealId &&
+        meal.name.trim().toLocaleLowerCase() === normalizedName,
+    );
   }
 
   editMeal(meal: Meal): MealFormState {

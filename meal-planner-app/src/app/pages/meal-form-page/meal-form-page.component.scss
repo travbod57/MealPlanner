@@ -38,12 +38,24 @@ h1 {
 .field-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  align-items: start;
   gap: 16px;
 }
 
 .field-grid mat-form-field {
   width: 100%;
   min-width: 0;
+}
+
+.field-grid > div {
+  min-width: 0;
+}
+
+.validation-error {
+  margin: 4px 0 0;
+  color: #b3261e;
+  font-size: 0.75rem;
+  line-height: 1.2;
 }
 
 .full-width {

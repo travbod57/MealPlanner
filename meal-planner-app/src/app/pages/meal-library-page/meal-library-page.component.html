@@ -103,7 +103,11 @@
         <p class="notes" *ngIf="meal.notes">{{ meal.notes }}</p>
 
         <div class="meal-actions">
-          <a class="secondary-button" [routerLink]="['/meals', meal.id, 'edit']">Edit</a>
+          <a
+            class="secondary-button"
+            [routerLink]="['/meals', meal.id, 'edit']"
+            [queryParams]="{ returnUrl: '/meals' }"
+          >Edit</a>
           <button class="secondary-button" type="button" (click)="deleteMeal(meal)">Delete</button>
         </div>
       </article>

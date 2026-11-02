@@ -27,6 +27,10 @@ export class MealDetailPageComponent implements OnInit {
       : this.mealPlanner.DAY_LABELS[this.dayIndex];
   }
 
+  get editReturnUrl(): string {
+    return this.router.url;
+  }
+
   ngOnInit(): void {
     const origin = this.route.snapshot.queryParamMap.get('from');
     if (

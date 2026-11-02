@@ -27,6 +27,7 @@ export class MealFormPageComponent implements OnInit {
   private readonly mealPlanner = inject(MealPlannerService);
 
   editingMealId: string | null = null;
+  private cancelReturnUrl = '/meals';
   mealForm: MealFormState = this.createEmptyForm();
   submitted = false;
 
@@ -34,7 +35,23 @@ export class MealFormPageComponent implements OnInit {
     return this.editingMealId !== null;
   }
 
+  get hasDuplicateMealName(): boolean {
+    return this.mealPlanner.isMealNameTaken(
+      this.mealForm.name,
+      this.editingMealId,
+    );
+  }
+
   ngOnInit(): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (
+      returnUrl?.startsWith('/') &&
+      !returnUrl.startsWith('//') &&
+      !returnUrl.includes('\\')
+    ) {
+      this.cancelReturnUrl = returnUrl;
+    }
+
     const mealId = this.route.snapshot.paramMap.get('id');
     if (!mealId) {
       return;
@@ -54,6 +71,7 @@ export class MealFormPageComponent implements OnInit {
     this.submitted = true;
     if (
       !this.mealForm.name.trim() ||
+      this.hasDuplicateMealName ||
       !this.mealForm.category.trim() ||
       this.mealForm.vegetarian === null ||
       (this.mealForm.mealType === 'leftovers' &&
@@ -62,12 +80,14 @@ export class MealFormPageComponent implements OnInit {
       return;
     }
 
-    this.mealPlanner.saveMeal(this.mealForm, this.editingMealId);
+    if (!this.mealPlanner.saveMeal(this.mealForm, this.editingMealId)) {
+      return;
+    }
     void this.router.navigateByUrl('/meals');
   }
 
   cancel(): void {
-    void this.router.navigateByUrl('/meals');
+    void this.router.navigateByUrl(this.cancelReturnUrl);
   }
 
   private createEmptyForm(): MealFormState {

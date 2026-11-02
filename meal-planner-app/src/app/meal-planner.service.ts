@@ -419,6 +419,11 @@ export class MealPlannerService {
     this.persistAppState();
   }
 
+  shuffleDraftPlan(): void {
+    this.draftMealIds = this.shuffle(this.draftPlanMealIds);
+    this.persistAppState();
+  }
+
   setDraftPlanMeal(dayIndex: number, mealId: string): void {
     if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
       return;
@@ -901,7 +906,15 @@ export class MealPlannerService {
   }
 
   private shuffle<T>(items: T[]): T[] {
-    return [...items].sort(() => Math.random() - 0.5);
+    const shuffled = [...items];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [
+        shuffled[swapIndex],
+        shuffled[index],
+      ];
+    }
+    return shuffled;
   }
 
   private saveMeals(): void {

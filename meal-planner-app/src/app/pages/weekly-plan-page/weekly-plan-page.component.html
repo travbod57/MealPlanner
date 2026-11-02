@@ -8,7 +8,20 @@
       <button class="randomize-btn" type="button" (click)="randomizePlan()">
         Randomise
       </button>
-      <button class="secondary-button" type="button" (click)="clearDraftPlan()">
+      <button
+        class="randomize-btn"
+        type="button"
+        (click)="shufflePlan()"
+        [disabled]="!hasMealChoices"
+      >
+        Shuffle
+      </button>
+      <button
+        class="secondary-button"
+        type="button"
+        (click)="clearDraftPlan()"
+        [disabled]="!hasMealChoices"
+      >
         Clear all
       </button>
     </div>

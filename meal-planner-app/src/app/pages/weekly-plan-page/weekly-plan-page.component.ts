@@ -27,8 +27,16 @@ export class WeeklyPlanPageComponent {
   isDraggingMeal = false;
   activeDropIndex: number | null = null;
 
+  get hasMealChoices(): boolean {
+    return this.mealPlanner.draftPlanMealIds.some(Boolean);
+  }
+
   randomizePlan(): void {
     this.mealPlanner.randomizePlan();
+  }
+
+  shufflePlan(): void {
+    this.mealPlanner.shuffleDraftPlan();
   }
 
   clearDraftPlan(): void {

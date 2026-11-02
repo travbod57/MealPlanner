@@ -1,5 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  writeBatch,
+} from '@angular/fire/firestore';
 
 import { environment } from '../environments/environment';
 
@@ -61,6 +69,17 @@ interface HouseholdData {
   };
 }
 
+interface HouseholdMetadata {
+  draftPlan: HouseholdData['draftPlan'];
+  settings: HouseholdData['settings'];
+}
+
+interface LegacyHouseholdData extends HouseholdMetadata {
+  meals?: Meal[];
+  plans?: WeeklyPlan[];
+}
+
+const FIRESTORE_BATCH_SIZE = 450;
 const MEAL_STORAGE_KEY = 'meal-planner-meals';
 const PLAN_STORAGE_KEY = 'meal-planner-plans';
 const DRAFT_PLAN_STORAGE_KEY = 'meal-planner-draft-plan';
@@ -83,6 +102,8 @@ export class MealPlannerService {
   private draftMealIds: Array<string | null> = Array(7).fill(null);
   private draftPlanWeekStart = '';
   private firestoreWriteQueue: Promise<void> = Promise.resolve();
+  private readonly firestoreMealSnapshots = new Map<string, string>();
+  private readonly firestorePlanSnapshots = new Map<string, string>();
   private pendingFirestorePersistence = false;
   weekStartDay = 3;
   maxVegetarianMeals = 3;
@@ -659,17 +680,40 @@ export class MealPlannerService {
       return;
     }
 
-    const snapshot = await getDoc(
-      doc(this.firestore, 'households', this.householdKey),
+    const householdRef = doc(
+      this.firestore,
+      'households',
+      this.householdKey,
     );
-    if (!snapshot.exists()) {
-      this.draftPlanWeekStart = this.nextWeekStart();
-      return;
-    }
-
-    const data = snapshot.data() as Partial<HouseholdData> | undefined;
-    const loadedMeals = Array.isArray(data?.meals) ? data!.meals : [];
-    const loadedPlans = Array.isArray(data?.plans) ? data!.plans : [];
+    const [householdSnapshot, mealSnapshot, planSnapshot] = await Promise.all([
+      getDoc(householdRef),
+      getDocs(collection(householdRef, 'meals')),
+      getDocs(collection(householdRef, 'plans')),
+    ]);
+    const data = householdSnapshot.exists()
+      ? (householdSnapshot.data() as Partial<LegacyHouseholdData>)
+      : undefined;
+    const firestoreMeals = mealSnapshot.docs.map((mealDoc) => {
+      const meal = mealDoc.data() as Partial<Meal>;
+      return {
+        ...meal,
+        id: meal.id ?? mealDoc.id,
+        vegetarian: meal.vegetarian ?? null,
+        servings: meal.servings === 4 ? 4 : 2,
+        preparation: meal.preparation ?? [],
+      } as Meal;
+    });
+    const firestorePlans = planSnapshot.docs.map((planDoc) => {
+      const plan = planDoc.data() as Partial<WeeklyPlan>;
+      return {
+        ...plan,
+        id: plan.id ?? planDoc.id,
+      } as WeeklyPlan;
+    });
+    const legacyMeals = Array.isArray(data?.meals) ? data.meals : [];
+    const legacyPlans = Array.isArray(data?.plans) ? data.plans : [];
+    const loadedMeals = mergeRecordsById(legacyMeals, firestoreMeals);
+    const loadedPlans = mergeRecordsById(legacyPlans, firestorePlans);
     const settings = (data?.settings ?? {}) as Partial<
       HouseholdData['settings']
     >;
@@ -681,6 +725,12 @@ export class MealPlannerService {
       preparation: meal.preparation ?? [],
     }));
     this.plans = loadedPlans;
+    firestoreMeals.forEach((meal) => {
+      this.firestoreMealSnapshots.set(meal.id, JSON.stringify(meal));
+    });
+    firestorePlans.forEach((plan) => {
+      this.firestorePlanSnapshots.set(plan.id, JSON.stringify(plan));
+    });
 
     if (
       typeof settings.weekStartDay === 'number' &&
@@ -700,7 +750,13 @@ export class MealPlannerService {
       this.maxVegetarianMeals = settings.maxVegetarianMeals;
     }
     this.restoreDraftPlan(data?.draftPlan);
-    this.restoreDraftPlan(data?.draftPlan);
+    if (
+      !householdSnapshot.exists() ||
+      Array.isArray(data?.meals) ||
+      Array.isArray(data?.plans)
+    ) {
+      this.pendingFirestorePersistence = true;
+    }
   }
 
   private loadDraftPlan(): void {
@@ -892,12 +948,28 @@ export class MealPlannerService {
       settings: { ...appState.settings },
     };
     this.firestoreWriteQueue = this.firestoreWriteQueue
-      .then(() =>
-        setDoc(
-          doc(this.firestore!, 'households', this.householdKey),
-          stateToSave,
-        ),
-      )
+      .then(async () => {
+        const householdRef = doc(
+          this.firestore!,
+          'households',
+          this.householdKey,
+        );
+        await this.syncFirestoreCollection(
+          'meals',
+          stateToSave.meals,
+          this.firestoreMealSnapshots,
+        );
+        await this.syncFirestoreCollection(
+          'plans',
+          stateToSave.plans,
+          this.firestorePlanSnapshots,
+        );
+        const metadata: HouseholdMetadata = {
+          draftPlan: stateToSave.draftPlan,
+          settings: stateToSave.settings,
+        };
+        await setDoc(householdRef, metadata);
+      })
       .then(() => {
         this.saveError = null;
       })
@@ -906,6 +978,56 @@ export class MealPlannerService {
         this.saveError =
           'Changes could not be saved to Firestore. Keep this page open and check your connection before refreshing.';
       });
+  }
+
+  private async syncFirestoreCollection<T extends { id: string }>(
+    collectionName: 'meals' | 'plans',
+    records: T[],
+    savedSnapshots: Map<string, string>,
+  ): Promise<void> {
+    const collectionRef = collection(
+      this.firestore!,
+      'households',
+      this.householdKey,
+      collectionName,
+    );
+    const recordsById = new Map(records.map((record) => [record.id, record]));
+    const changes: Array<{ id: string; record: T | null }> = [];
+
+    recordsById.forEach((record, id) => {
+      if (savedSnapshots.get(id) !== JSON.stringify(record)) {
+        changes.push({ id, record });
+      }
+    });
+    savedSnapshots.forEach((_snapshot, id) => {
+      if (!recordsById.has(id)) {
+        changes.push({ id, record: null });
+      }
+    });
+
+    for (let offset = 0; offset < changes.length; offset += FIRESTORE_BATCH_SIZE) {
+      const batch = writeBatch(this.firestore!);
+      const batchChanges = changes.slice(
+        offset,
+        offset + FIRESTORE_BATCH_SIZE,
+      );
+      batchChanges.forEach(({ id, record }) => {
+        const recordRef = doc(collectionRef, id);
+        if (record) {
+          batch.set(recordRef, record);
+        } else {
+          batch.delete(recordRef);
+        }
+      });
+      await batch.commit();
+      batchChanges.forEach(({ id, record }) => {
+        if (record) {
+          savedSnapshots.set(id, JSON.stringify(record));
+        } else {
+          savedSnapshots.delete(id);
+        }
+      });
+    }
   }
 
   private shuffle<T>(items: T[]): T[] {
@@ -943,4 +1065,13 @@ export class MealPlannerService {
   private makeId(): string {
     return `meal-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
   }
+}
+
+function mergeRecordsById<T extends { id: string }>(
+  legacyRecords: T[],
+  firestoreRecords: T[],
+): T[] {
+  const records = new Map(legacyRecords.map((record) => [record.id, record]));
+  firestoreRecords.forEach((record) => records.set(record.id, record));
+  return [...records.values()];
 }

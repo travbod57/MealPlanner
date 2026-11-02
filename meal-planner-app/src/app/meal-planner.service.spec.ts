@@ -167,6 +167,19 @@ describe('MealPlannerService randomizePlan', () => {
     service.setMaxVegetarianMeals(5);
     const expectedDraft = [...service.draftPlanMealIds];
 
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-meals') ?? '[]').map(
+        (meal: Meal) => meal.id,
+      ),
+    ).toContain(mealId);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-plans') ?? '[]'),
+    ).toEqual(service.plans);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-settings') ?? '{}')
+        .maxVegetarianMeals,
+    ).toBe(5);
+
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({ providers: [MealPlannerService] });
     const restoredService = TestBed.inject(MealPlannerService);

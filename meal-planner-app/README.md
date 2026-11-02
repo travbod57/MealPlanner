@@ -38,53 +38,27 @@ To enable it:
 
 When the toggle is off, the app continues to use local browser storage so the prototype remains simple and independent of auth or backend setup.
 
-### Single-household Firestore model
+### Firestore data model
 
-The cloud version stores a single document at `households/default-household`.
-The app waits for that document to load before enabling its pages and uses
-Firestore's persistent multi-tab cache so pending writes survive browser
-refreshes. If the document cannot be loaded, the app reports the error instead
-of saving an empty state over the existing data.
+The cloud version stores household metadata at
+`households/default-household` (settings and the current draft), with each meal
+and weekly plan stored in its own document under
+`households/default-household/meals/{mealId}` and
+`households/default-household/plans/{planId}`. This avoids growing one
+household document with the entire meal library and plan history. The app only
+writes changed records and batches large migrations in chunks below Firestore's
+write-batch limit.
 
-```json
-{
-  "meals": [
-    {
-      "id": "meal-123",
-      "name": "Spaghetti Bolognese",
-      "category": "Dinner",
-      "mealType": "recipe",
-      "vegetarian": false,
-      "servings": 2,
-      "ingredients": ["spaghetti", "mince", "tomato sauce"],
-      "steps": ["Cook the pasta", "Brown the mince"],
-      "preparation": ["Chop the vegetables", "Marinate the mince"],
-      "createdAt": "2026-01-01T00:00:00.000Z",
-      "updatedAt": "2026-01-01T00:00:00.000Z",
-      "timesUsed": 0,
-      "averageRating": 0,
-      "ratingCount": 0,
-      "starRating": 7,
-      "notes": "",
-      "customTitle": null
-    }
-  ],
-  "plans": [
-    {
-      "id": "plan-123",
-      "weekStart": "2026-01-05",
-      "mealIds": ["meal-123", null, null, null, null, null, null],
-      "generatedAt": "2026-01-01T00:00:00.000Z"
-    }
-  ],
-  "settings": {
-    "weekStartDay": 3,
-    "maxVegetarianMeals": 3
-  }
-}
-```
+On startup, the app reads the legacy `meals` and `plans` arrays if they are
+still present on the household document. It merges them with the new
+subcollections, writes missing records, and then replaces the household
+document with metadata only. The migration is repeatable if interrupted; no
+manual data migration is needed. A load failure prevents persistence so empty
+state cannot overwrite cloud data.
 
-This keeps the Phase 1 architecture intentionally simple: one household, one shared document, no multi-user auth yet.
+The Firestore implementation is only used when `useFirestore` is enabled. With
+the default local environment, meals, plans, draft, and settings continue to
+use separate `localStorage` entries.
 
 ## Running unit tests
 

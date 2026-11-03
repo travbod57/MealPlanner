@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "mealplannerapp-prod-2026"
-  }
+  },
+  "targets": {
+    "mealplannerapp-prod-2026": {
+      "hosting": {
+        "production": [
+          "whats4dinnerdf"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

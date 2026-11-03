@@ -4,6 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "target": "production",
     "public": "dist/meal-planner-app/browser",
     "ignore": [
       "firebase.json",

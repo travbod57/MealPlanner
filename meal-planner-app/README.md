@@ -16,12 +16,16 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Deployment
 
-This app is configured for Firebase Hosting deployments with GitHub Actions.
+This app is configured for Firebase Hosting deployments with GitHub Actions. The
+current production Hosting target is `production`, bound to the `whats4dinnerdf`
+site (`https://whats4dinnerdf.web.app`). Hosting site changes do not change the
+production Firestore project or its data.
 
 1. Create a Firebase project and enable Hosting.
-2. Update the project ID in `.firebaserc` to match your Firebase project name.
-3. Add a GitHub secret named `FIREBASE_SERVICE_ACCOUNT_MEAL_PLANNER_APP` with the Firebase service account JSON.
-4. Push to `main` to deploy to production, or open a pull request for a preview deployment.
+2. Create a Hosting site in the project, then bind it to the `production` target in `.firebaserc` with `firebase target:apply hosting production SITE_ID`.
+3. Keep the Firebase project ID in `.firebaserc` and the production environment configuration aligned.
+4. Add a GitHub secret named `FIREBASE_SERVICE_ACCOUNT_MEAL_PLANNER_APP` with the Firebase service account JSON.
+5. Push to `main` to deploy to the production target, or open a pull request for a preview deployment.
 
 The workflow files live in `.github/workflows` and will run `npm ci`, build the Angular app, and deploy it to Firebase Hosting when the conditions are met.
 

@@ -5,7 +5,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Meal, MealPlannerService } from '../../meal-planner.service';
 
-type MealSortOrder = 'name-asc' | 'name-desc' | 'rating-asc' | 'rating-desc';
+type MealSortOrder =
+  | 'name-asc'
+  | 'name-desc'
+  | 'rating-asc'
+  | 'rating-desc'
+  | 'times-used-asc'
+  | 'times-used-desc';
 
 @Component({
   selector: 'app-meal-picker-page',
@@ -37,6 +43,9 @@ export class MealPickerPageComponent implements OnInit {
         const direction = this.sortOrder.endsWith('asc') ? 1 : -1;
         if (this.sortOrder.startsWith('rating')) {
           return direction * (a.starRating - b.starRating);
+        }
+        if (this.sortOrder.startsWith('times-used')) {
+          return direction * (a.timesUsed - b.timesUsed);
         }
         return (
           direction *

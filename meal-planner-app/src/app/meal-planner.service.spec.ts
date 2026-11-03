@@ -233,16 +233,43 @@ describe('MealPlannerService randomizePlan', () => {
     );
   });
 
-  it('prevents duplicate meal names regardless of case or surrounding spaces', () => {
+  it('allows the same name only for a leftovers and non-leftovers pair', () => {
     const existingMeal = service.meals[0];
-    const duplicateForm = {
+    const duplicateForm: MealFormState = {
       ...service.editMeal(existingMeal),
       name: `  ${existingMeal.name.toUpperCase()}  `,
     };
 
     expect(service.saveMeal(duplicateForm, null)).toBeFalse();
-    expect(service.meals.length).toBe(4);
-    expect(service.isMealNameTaken(existingMeal.name, existingMeal.id)).toBeFalse();
+
+    const leftoversForm = {
+      ...duplicateForm,
+      mealType: 'leftovers' as const,
+      customTitle: 'Leftover meal',
+    };
+    expect(service.saveMeal(leftoversForm, null)).toBeTrue();
+    expect(service.meals.length).toBe(5);
+    expect(
+      service.isMealNameTaken(existingMeal.name, 'recipe', existingMeal.id),
+    ).toBeFalse();
+
+    const duplicateLeftoversForm = {
+      ...leftoversForm,
+      id: '',
+    };
+    expect(service.saveMeal(duplicateLeftoversForm, null)).toBeFalse();
+  });
+
+  it('allows a regular meal to share a name with an existing leftovers meal', () => {
+    const leftoversMeal = service.meals[0];
+    leftoversMeal.mealType = 'leftovers';
+    const regularMealForm: MealFormState = {
+      ...service.editMeal(leftoversMeal),
+      mealType: 'takeaway',
+      customTitle: '',
+    };
+
+    expect(service.saveMeal(regularMealForm, null)).toBeTrue();
   });
 
   it('loads older meals without preparation steps', () => {

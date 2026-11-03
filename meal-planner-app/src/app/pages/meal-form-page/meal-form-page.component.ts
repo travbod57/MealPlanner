@@ -38,6 +38,7 @@ export class MealFormPageComponent implements OnInit {
   get hasDuplicateMealName(): boolean {
     return this.mealPlanner.isMealNameTaken(
       this.mealForm.name,
+      this.mealForm.mealType,
       this.editingMealId,
     );
   }

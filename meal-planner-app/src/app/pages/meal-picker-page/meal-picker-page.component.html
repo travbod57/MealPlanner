@@ -45,20 +45,29 @@
         <span class="meal-type">{{ meal.category }} · {{ mealPlanner.getMealTypeLabel(meal.mealType) }}</span>
         <span class="meal-name-row">
           <strong>{{ meal.customTitle || meal.name }}</strong>
-          <span
-            *ngIf="meal.vegetarian === true"
-            class="vegetarian-mark"
-            role="img"
-            aria-label="Vegetarian"
-            title="Vegetarian"
-          >V</span>
-        </span>
-        <span
-          class="rating-badge"
-          [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
-        >
-          <span>{{ meal.starRating }}</span>
-          <span class="rating-star" aria-hidden="true">★</span>
+          <span class="meal-indicators">
+            <span
+              *ngIf="meal.mealType === 'leftovers'"
+              class="leftover-mark"
+              role="img"
+              aria-label="Leftovers"
+              title="Leftovers"
+            >L</span>
+            <span
+              *ngIf="meal.vegetarian === true"
+              class="vegetarian-mark"
+              role="img"
+              aria-label="Vegetarian"
+              title="Vegetarian"
+            >V</span>
+            <span
+              class="rating-badge"
+              [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
+            >
+              <span>{{ meal.starRating }}</span>
+              <span class="rating-star" aria-hidden="true">★</span>
+            </span>
+          </span>
         </span>
       </a>
       <button class="choose-button" type="button" (click)="selectMeal(meal.id)">

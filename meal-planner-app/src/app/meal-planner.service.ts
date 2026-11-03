@@ -260,7 +260,7 @@ export class MealPlannerService {
     const name = form.name.trim();
     if (
       !name ||
-      this.isMealNameTaken(name, editingMealId) ||
+      this.isMealNameTaken(name, form.mealType, editingMealId) ||
       !form.category.trim() ||
       typeof form.vegetarian !== 'boolean' ||
       (form.mealType === 'leftovers' && !form.customTitle.trim())
@@ -312,12 +312,22 @@ export class MealPlannerService {
     return true;
   }
 
-  isMealNameTaken(name: string, excludingMealId: string | null = null): boolean {
+  isMealNameTaken(
+    name: string,
+    mealType: MealType,
+    excludingMealId: string | null = null,
+  ): boolean {
     const normalizedName = name.trim().toLocaleLowerCase();
     return this.meals.some(
-      (meal) =>
-        meal.id !== excludingMealId &&
-        meal.name.trim().toLocaleLowerCase() === normalizedName,
+      (meal) => {
+        const oneIsLeftovers =
+          (meal.mealType === 'leftovers') !== (mealType === 'leftovers');
+        return (
+          meal.id !== excludingMealId &&
+          meal.name.trim().toLocaleLowerCase() === normalizedName &&
+          !oneIsLeftovers
+        );
+      },
     );
   }
 

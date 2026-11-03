@@ -34,7 +34,7 @@
     <div class="meal-list" *ngIf="mealPlanner.meals.length; else noMealsTemplate">
       <article class="meal-card" *ngFor="let meal of filteredMeals">
         <div class="meal-card-header">
-          <div>
+          <div class="meal-card-title">
             <div class="meal-title-row">
               <h3>
                 <a
@@ -43,21 +43,30 @@
                   [queryParams]="{ from: 'meal-library' }"
                 >{{ meal.customTitle || meal.name }}</a>
               </h3>
-              <span
-                *ngIf="meal.vegetarian === true"
-                class="vegetarian-mark"
-                role="img"
-                aria-label="Vegetarian"
-                title="Vegetarian"
-              >V</span>
             </div>
           </div>
-          <div
-            class="rating-badge"
-            [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
-          >
-            <span>{{ meal.starRating }}</span>
-            <span class="rating-star" aria-hidden="true">★</span>
+          <div class="meal-card-indicators">
+            <span
+              *ngIf="meal.mealType === 'leftovers'"
+              class="leftover-mark"
+              role="img"
+              aria-label="Leftovers"
+              title="Leftovers"
+            >L</span>
+            <span
+              *ngIf="meal.vegetarian === true"
+              class="vegetarian-mark"
+              role="img"
+              aria-label="Vegetarian"
+              title="Vegetarian"
+            >V</span>
+            <div
+              class="rating-badge"
+              [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
+            >
+              <span>{{ meal.starRating }}</span>
+              <span class="rating-star" aria-hidden="true">★</span>
+            </div>
           </div>
         </div>
 

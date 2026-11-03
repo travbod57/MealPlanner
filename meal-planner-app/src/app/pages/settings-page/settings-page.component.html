@@ -31,6 +31,24 @@
       </mat-form-field>
     </section>
 
+    <section class="panel build-info" aria-label="Build information">
+      <h2>Build information</h2>
+      <dl>
+        <div>
+          <dt>Build</dt>
+          <dd>{{ buildInfo.buildNumber }}</dd>
+        </div>
+        <div>
+          <dt>Commit</dt>
+          <dd>{{ buildInfo.sha }}</dd>
+        </div>
+        <div>
+          <dt>Built</dt>
+          <dd>{{ buildInfo.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</dd>
+        </div>
+      </dl>
+    </section>
+
     <div class="form-actions">
       <button class="primary-button" type="submit">Save settings</button>
     </div>

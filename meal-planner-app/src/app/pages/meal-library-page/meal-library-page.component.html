@@ -29,9 +29,12 @@
               >V</span>
             </div>
           </div>
-          <div class="rating-box">
-            <span>{{ getStarDisplay(meal.starRating) }}</span>
-            <small>{{ meal.starRating }}/10</small>
+          <div
+            class="rating-badge"
+            [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
+          >
+            <span>{{ meal.starRating }}</span>
+            <span class="rating-star" aria-hidden="true">★</span>
           </div>
         </div>
 

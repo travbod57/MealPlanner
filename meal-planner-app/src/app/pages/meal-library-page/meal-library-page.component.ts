@@ -87,10 +87,6 @@ export class MealLibraryPageComponent {
     return this.mealPlanner.getMealTypeLabel(type);
   }
 
-  getStarDisplay(value: number): string {
-    return this.mealPlanner.getStarDisplay(value);
-  }
-
   getMealNameById(mealId: string | null): string {
     return this.mealPlanner.getMealNameById(mealId);
   }

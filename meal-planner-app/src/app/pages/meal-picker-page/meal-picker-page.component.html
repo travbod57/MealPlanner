@@ -30,8 +30,13 @@
             title="Vegetarian"
           >V</span>
         </span>
-        <span class="meal-diet">{{ meal.vegetarian == null ? 'Diet not set' : meal.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}</span>
-        <span class="rating">{{ mealPlanner.getStarDisplay(meal.starRating) }} · {{ meal.starRating }}/10</span>
+        <span
+          class="rating-badge"
+          [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
+        >
+          <span>{{ meal.starRating }}</span>
+          <span class="rating-star" aria-hidden="true">★</span>
+        </span>
       </a>
       <button class="choose-button" type="button" (click)="selectMeal(meal.id)">
         Choose for {{ dayLabel }}

@@ -133,12 +133,22 @@ h3 {
   align-items: flex-start;
 }
 
-.rating-box {
+.rating-badge {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid #dfe8f4;
+  border-radius: 999px;
+  background: #fff;
   color: #ffb000;
   font-weight: 700;
+}
+
+.rating-star {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .meal-facts {

@@ -92,9 +92,23 @@ h1 {
   font-size: 0.85rem;
 }
 
-.rating {
-  color: #8a6200;
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid #dfe8f4;
+  border-radius: 999px;
+  background: #fff;
+  color: #ffb000;
   font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.rating-star {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .choose-button {

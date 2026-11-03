@@ -49,6 +49,33 @@ h2 {
   width: min(100%, 320px);
 }
 
+.build-info h2 {
+  margin-bottom: 12px;
+}
+
+.build-info dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.build-info dl > div {
+  display: grid;
+  grid-template-columns: minmax(90px, 120px) 1fr;
+  gap: 12px;
+}
+
+.build-info dt {
+  color: #647087;
+  font-weight: 700;
+}
+
+.build-info dd {
+  margin: 0;
+  color: #374a6a;
+  overflow-wrap: anywhere;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

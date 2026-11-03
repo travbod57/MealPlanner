@@ -3,7 +3,6 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
-import { buildInfo } from './build-info';
 import { MealPlannerService } from './meal-planner.service';
 
 @Component({
@@ -20,6 +19,5 @@ import { MealPlannerService } from './meal-planner.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  readonly buildInfo = buildInfo;
   readonly mealPlanner = inject(MealPlannerService);
 }

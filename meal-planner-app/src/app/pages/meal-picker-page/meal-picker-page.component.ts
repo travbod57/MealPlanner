@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { MealPlannerService } from '../../meal-planner.service';
+import { Meal, MealPlannerService } from '../../meal-planner.service';
+
+type MealSortOrder = 'name-asc' | 'name-desc' | 'rating-asc' | 'rating-desc';
 
 @Component({
   selector: 'app-meal-picker-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './meal-picker-page.component.html',
   styleUrl: './meal-picker-page.component.scss',
 })
@@ -17,6 +20,30 @@ export class MealPickerPageComponent implements OnInit {
   readonly mealPlanner = inject(MealPlannerService);
 
   dayIndex = -1;
+  searchTerm = '';
+  sortOrder: MealSortOrder = 'name-asc';
+
+  get filteredMeals(): Meal[] {
+    const query = this.searchTerm.trim().toLocaleLowerCase();
+    return this.mealPlanner.meals
+      .filter(
+        (meal) =>
+          !query ||
+          (meal.customTitle || meal.name)
+            .toLocaleLowerCase()
+            .includes(query),
+      )
+      .sort((a, b) => {
+        const direction = this.sortOrder.endsWith('asc') ? 1 : -1;
+        if (this.sortOrder.startsWith('rating')) {
+          return direction * (a.starRating - b.starRating);
+        }
+        return (
+          direction *
+          (a.customTitle || a.name).localeCompare(b.customTitle || b.name)
+        );
+      });
+  }
 
   get dayLabel(): string {
     return this.mealPlanner.DAY_LABELS[this.dayIndex] ?? '';

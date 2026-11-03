@@ -8,8 +8,29 @@
   </header>
 
   <section class="panel">
+    <div class="meal-controls">
+      <label class="meal-search">
+        <input
+          type="search"
+          name="mealSearch"
+          [(ngModel)]="searchTerm"
+          placeholder="Search by meal name"
+          aria-label="Search meals"
+        />
+      </label>
+      <label class="meal-sort">
+        <span class="visually-hidden">Sort meals</span>
+        <select name="mealSort" [(ngModel)]="sortOrder" aria-label="Sort meals">
+          <option value="name-asc">Name (A–Z)</option>
+          <option value="name-desc">Name (Z–A)</option>
+          <option value="rating-asc">Rating (low to high)</option>
+          <option value="rating-desc">Rating (high to low)</option>
+        </select>
+      </label>
+    </div>
+
     <div class="meal-list" *ngIf="mealPlanner.meals.length; else noMealsTemplate">
-      <article class="meal-card" *ngFor="let meal of mealPlanner.meals">
+      <article class="meal-card" *ngFor="let meal of filteredMeals">
         <div class="meal-card-header">
           <div>
             <div class="meal-title-row">
@@ -114,6 +135,9 @@
           <button class="secondary-button" type="button" (click)="deleteMeal(meal)">Delete</button>
         </div>
       </article>
+      <p *ngIf="!filteredMeals.length" class="empty-state" role="status">
+        No meals match "{{ searchTerm }}".
+      </p>
     </div>
   </section>
 

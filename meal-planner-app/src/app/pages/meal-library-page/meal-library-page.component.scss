@@ -77,6 +77,60 @@ h3 {
   margin-bottom: 20px;
 }
 
+.meal-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.meal-search {
+  display: block;
+  flex: 1 1 420px;
+  max-width: 420px;
+}
+
+.meal-sort {
+  flex: 0 0 auto;
+}
+
+.meal-search input,
+.meal-sort select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #c8d0dc;
+  border-radius: 8px;
+  background: #fff;
+  color: #182737;
+  font: inherit;
+  font-weight: 400;
+}
+
+.meal-search input:focus-visible,
+.meal-sort select:focus-visible {
+  border-color: #7a4cc7;
+  outline: 2px solid rgba(122, 76, 199, 0.25);
+  outline-offset: 1px;
+}
+
+.meal-sort select {
+  padding-right: 32px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .meal-list,
 .history-list,
 .week-plan-grid {
@@ -264,5 +318,14 @@ h3 {
 
   .meal-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .meal-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .meal-search {
+    max-width: none;
   }
 }

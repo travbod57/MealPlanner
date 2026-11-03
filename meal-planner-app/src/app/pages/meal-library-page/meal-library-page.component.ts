@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,8 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 
 import { Meal, MealPlannerService, MealType } from '../../meal-planner.service';
+
+type MealSortOrder = 'name-asc' | 'name-desc' | 'rating-asc' | 'rating-desc';
 
 @Component({
   selector: 'app-confirm-meal-delete-dialog',
@@ -37,7 +40,7 @@ class ConfirmMealDeleteDialogComponent {
 @Component({
   selector: 'app-meal-library-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatDialogModule, MatIconModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatDialogModule, MatIconModule],
   animations: [
     trigger('slidePanel', [
       transition(':enter', [
@@ -68,6 +71,30 @@ export class MealLibraryPageComponent {
   readonly mealPlanner = inject(MealPlannerService);
   private readonly dialog = inject(MatDialog);
   private expandedMealIds = new Set<string>();
+  searchTerm = '';
+  sortOrder: MealSortOrder = 'name-asc';
+
+  get filteredMeals(): Meal[] {
+    const query = this.searchTerm.trim().toLocaleLowerCase();
+    return this.mealPlanner.meals
+      .filter(
+        (meal) =>
+          !query ||
+          (meal.customTitle || meal.name)
+            .toLocaleLowerCase()
+            .includes(query),
+      )
+      .sort((a, b) => {
+        const direction = this.sortOrder.endsWith('asc') ? 1 : -1;
+        if (this.sortOrder.startsWith('rating')) {
+          return direction * (a.starRating - b.starRating);
+        }
+        return (
+          direction *
+          (a.customTitle || a.name).localeCompare(b.customTitle || b.name)
+        );
+      });
+  }
 
   isDetailsExpanded(mealId: string): boolean {
     return this.expandedMealIds.has(mealId);

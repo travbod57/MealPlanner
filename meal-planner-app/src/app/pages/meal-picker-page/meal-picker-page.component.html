@@ -12,8 +12,29 @@
     </div>
   </header>
 
+  <div class="meal-controls" *ngIf="mealPlanner.meals.length">
+    <label class="meal-search">
+      <input
+        type="search"
+        name="mealSearch"
+        [(ngModel)]="searchTerm"
+        placeholder="Search by meal name"
+        aria-label="Search meals"
+      />
+    </label>
+    <label class="meal-sort">
+      <span class="visually-hidden">Sort meals</span>
+      <select name="mealSort" [(ngModel)]="sortOrder" aria-label="Sort meals">
+        <option value="name-asc">Name (A–Z)</option>
+        <option value="name-desc">Name (Z–A)</option>
+        <option value="rating-asc">Rating (low to high)</option>
+        <option value="rating-desc">Rating (high to low)</option>
+      </select>
+    </label>
+  </div>
+
   <section class="meal-list" *ngIf="mealPlanner.meals.length; else noMeals">
-    <article class="meal-item" *ngFor="let meal of mealPlanner.meals">
+    <article class="meal-item" *ngFor="let meal of filteredMeals">
       <a
         class="meal-summary"
         [routerLink]="['/meals', meal.id]"
@@ -42,6 +63,9 @@
         Choose for {{ dayLabel }}
       </button>
     </article>
+    <p *ngIf="!filteredMeals.length" class="empty-state" role="status">
+      No meals match "{{ searchTerm }}".
+    </p>
   </section>
 </div>
 

@@ -339,7 +339,7 @@ export class MealPlannerService {
       mealType: meal.mealType,
       vegetarian: meal.vegetarian ?? false,
       servings: meal.servings === 4 ? 4 : 2,
-      ingredients: meal.ingredients.join(', '),
+      ingredients: meal.ingredients.join('\n'),
       steps: meal.steps.join('\n'),
       preparation: meal.preparation.join('\n'),
       notes: meal.notes,
@@ -1067,7 +1067,7 @@ export class MealPlannerService {
 
   private parseList(value: string): string[] {
     return value
-      .split(/\n|,/)
+      .split(/\r?\n/)
       .map((item) => item.trim())
       .filter(Boolean);
   }

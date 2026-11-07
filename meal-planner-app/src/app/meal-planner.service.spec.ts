@@ -233,6 +233,32 @@ describe('MealPlannerService randomizePlan', () => {
     );
   });
 
+  it('keeps commas within ingredient and preparation entries', () => {
+    const form: MealFormState = {
+      ...service.editMeal(createMeal('comma-meal', false)),
+      name: 'Comma meal',
+      ingredients: '1 onion, diced\n2 tomatoes',
+      preparation: 'Chop the onion, then saute\nAdd the tomatoes',
+      steps: 'Mix the sauce, then simmer',
+    };
+
+    service.saveMeal(form, null);
+
+    const meal = service.meals.find((entry) => entry.name === 'Comma meal');
+    expect(meal?.ingredients).toEqual(['1 onion, diced', '2 tomatoes']);
+    expect(meal?.preparation).toEqual([
+      'Chop the onion, then saute',
+      'Add the tomatoes',
+    ]);
+    expect(meal?.steps).toEqual(['Mix the sauce, then simmer']);
+    expect(meal && service.editMeal(meal).ingredients).toBe(
+      '1 onion, diced\n2 tomatoes',
+    );
+    expect(meal && service.editMeal(meal).preparation).toBe(
+      'Chop the onion, then saute\nAdd the tomatoes',
+    );
+  });
+
   it('allows the same name only for a leftovers and non-leftovers pair', () => {
     const existingMeal = service.meals[0];
     const duplicateForm: MealFormState = {

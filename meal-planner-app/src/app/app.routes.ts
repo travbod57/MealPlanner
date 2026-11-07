@@ -10,16 +10,17 @@ import { WeeklyPlanPageComponent } from './pages/weekly-plan-page/weekly-plan-pa
 
 export const routes: Routes = [
   { path: '', redirectTo: 'this-week', pathMatch: 'full' },
-  { path: 'this-week', component: ThisWeekPageComponent },
-  { path: 'plan-next-week', component: WeeklyPlanPageComponent },
-  { path: 'settings', component: SettingsPageComponent },
+  { path: 'this-week', component: ThisWeekPageComponent, title: 'This Week | whats4dinnerDF' },
+  { path: 'plan-next-week', component: WeeklyPlanPageComponent, title: 'Plan Next Week | whats4dinnerDF' },
+  { path: 'settings', component: SettingsPageComponent, title: 'Settings | whats4dinnerDF' },
   {
     path: 'plan-next-week/:dayIndex/choose',
     component: MealPickerPageComponent,
+    title: 'Choose a Meal | whats4dinnerDF',
   },
-  { path: 'meals', component: MealLibraryPageComponent },
-  { path: 'meals/new', component: MealFormPageComponent },
-  { path: 'meals/:id/edit', component: MealFormPageComponent },
-  { path: 'meals/:id', component: MealDetailPageComponent },
+  { path: 'meals', component: MealLibraryPageComponent, title: 'Saved Meals | whats4dinnerDF' },
+  { path: 'meals/new', component: MealFormPageComponent, title: 'Add a Meal | whats4dinnerDF' },
+  { path: 'meals/:id/edit', component: MealFormPageComponent, title: 'Edit Meal | whats4dinnerDF' },
+  { path: 'meals/:id', component: MealDetailPageComponent, title: 'Meal Details | whats4dinnerDF' },
   { path: '**', redirectTo: 'this-week' },
 ];

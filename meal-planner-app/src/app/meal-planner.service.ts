@@ -191,6 +191,10 @@ export class MealPlannerService {
     return meal.customTitle || meal.name;
   }
 
+  getMealById(mealId: string | null): Meal | null {
+    return this.meals.find((entry) => entry.id === mealId) ?? null;
+  }
+
   isVegetarianMeal(mealId: string | null): boolean {
     return this.meals.some(
       (meal) => meal.id === mealId && meal.vegetarian === true,

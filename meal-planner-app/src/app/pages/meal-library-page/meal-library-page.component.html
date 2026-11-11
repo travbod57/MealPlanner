@@ -104,7 +104,7 @@
           <mat-icon aria-hidden="true">
             {{ isDetailsExpanded(meal.id) ? 'expand_less' : 'expand_more' }}
           </mat-icon>
-          {{ isDetailsExpanded(meal.id) ? 'Hide recipe details' : 'Show ingredients, preparation and steps' }}
+          {{ isDetailsExpanded(meal.id) ? 'Hide recipe details' : 'Show ingredients, preparation and recipe' }}
         </button>
 
         <div
@@ -113,13 +113,6 @@
           [id]="'meal-details-' + meal.id"
           class="meal-detail-panel"
         >
-          <div *ngIf="meal.ingredients?.length" class="info-block">
-            <strong>Ingredients</strong>
-            <ul>
-              <li *ngFor="let ingredient of meal.ingredients">{{ ingredient }}</li>
-            </ul>
-          </div>
-
           <div *ngIf="meal.preparation?.length" class="info-block">
             <strong>Preparation</strong>
             <ol>
@@ -127,8 +120,15 @@
             </ol>
           </div>
 
+          <div *ngIf="meal.ingredients?.length" class="info-block">
+            <strong>Ingredients</strong>
+            <ul>
+              <li *ngFor="let ingredient of meal.ingredients">{{ ingredient }}</li>
+            </ul>
+          </div>
+
           <div *ngIf="meal.steps?.length" class="info-block">
-            <strong>Steps</strong>
+            <strong>Recipe</strong>
             <ol>
               <li *ngFor="let step of meal.steps">{{ step }}</li>
             </ol>

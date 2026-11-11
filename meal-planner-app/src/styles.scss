@@ -28,6 +28,25 @@ body {
 	line-height: 1;
 }
 
+.rating-badge {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 5px;
+	height: 32px;
+	padding: 5px 9px;
+	border: 1px solid #dfe8f4;
+	border-radius: 999px;
+	background: #fff;
+	color: #ffb000;
+	font-weight: 700;
+}
+
+.rating-star {
+	font-size: 1rem;
+	line-height: 1;
+}
+
 .meal-title-link {
 	color: inherit;
 	text-decoration: none;

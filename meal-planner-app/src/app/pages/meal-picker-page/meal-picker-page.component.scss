@@ -155,17 +155,7 @@ h1 {
 }
 
 .rating-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 32px;
-  padding: 5px 9px;
-  border: 1px solid #dfe8f4;
-  border-radius: 999px;
-  background: #fff;
-  color: #ffb000;
   font-size: 0.9rem;
-  font-weight: 700;
 }
 
 .meal-indicators .vegetarian-mark {
@@ -186,11 +176,6 @@ h1 {
   color: #a32626;
   font-size: 0.9rem;
   font-weight: 800;
-  line-height: 1;
-}
-
-.rating-star {
-  font-size: 1rem;
   line-height: 1;
 }
 

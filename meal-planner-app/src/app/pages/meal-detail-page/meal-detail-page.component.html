@@ -43,6 +43,13 @@
       </div>
     </div>
 
+    <section class="info-block" *ngIf="savedMeal.preparation.length">
+      <h2>Preparation</h2>
+      <ol>
+        <li *ngFor="let step of savedMeal.preparation">{{ step }}</li>
+      </ol>
+    </section>
+
     <section class="info-block" *ngIf="savedMeal.ingredients.length">
       <h2>Ingredients</h2>
       <ul>
@@ -51,16 +58,9 @@
     </section>
 
     <section class="info-block" *ngIf="savedMeal.steps.length">
-      <h2>Recipe steps</h2>
+      <h2>Recipe</h2>
       <ol>
         <li *ngFor="let step of savedMeal.steps">{{ step }}</li>
-      </ol>
-    </section>
-
-    <section class="info-block" *ngIf="savedMeal.preparation.length">
-      <h2>Preparation</h2>
-      <ol>
-        <li *ngFor="let step of savedMeal.preparation">{{ step }}</li>
       </ol>
     </section>
 

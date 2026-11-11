@@ -44,13 +44,25 @@
           <div class="day-header">
             <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
           </div>
-          <span
-            *ngIf="mealPlanner.isVegetarianMeal(mealId)"
-            class="vegetarian-mark"
-            role="img"
-            aria-label="Vegetarian"
-            title="Vegetarian"
-          >V</span>
+          <div class="day-card-indicators">
+            <span
+              *ngIf="mealPlanner.isVegetarianMeal(mealId)"
+              class="vegetarian-mark"
+              role="img"
+              aria-label="Vegetarian"
+              title="Vegetarian"
+            >V</span>
+            <ng-container *ngIf="mealPlanner.getMealById(mealId) as meal">
+              <span
+                class="rating-badge"
+                [attr.aria-label]="'Rating ' + meal.starRating + ' out of 10'"
+                [title]="'Rating ' + meal.starRating + ' out of 10'"
+              >
+                <span>{{ meal.starRating }}</span>
+                <span class="rating-star" aria-hidden="true">★</span>
+              </span>
+            </ng-container>
+          </div>
           <div class="day-meal">
             <span class="selected-meal-name">
               {{ mealPlanner.getMealNameById(mealId) }}

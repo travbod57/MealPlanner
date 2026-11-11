@@ -122,7 +122,7 @@ h2 {
 .day-header {
   display: flex;
   flex-direction: column;
-  padding: 0 30px 9px 0;
+  padding: 0 0 9px;
   border-bottom: 1px solid #dfe8f4;
 }
 
@@ -132,10 +132,16 @@ h2 {
   font-weight: 700;
 }
 
-.day-card > .vegetarian-mark {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.day-card-indicators {
+  display: flex;
+  align-self: flex-end;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  margin-top: -4px;
+}
+
+.day-card-indicators .vegetarian-mark {
   color: #28613c;
   font-size: 0.75rem;
 }

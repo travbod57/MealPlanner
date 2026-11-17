@@ -20,6 +20,7 @@
         [id]="dayDropListIds[index]"
         [cdkDropListData]="index"
         [cdkDropListConnectedTo]="dayDropListIds"
+        [cdkDropListSortingDisabled]="true"
         [cdkDropListAutoScrollDisabled]="true"
         (cdkDropListEntered)="onDayDragEntered($event)"
         (cdkDropListExited)="onDayDragExited($event)"
@@ -38,7 +39,7 @@
           (cdkDragStarted)="onMealDragStarted()"
           (cdkDragEnded)="onMealDragEnded()"
         >
-          <div class="day-header">
+          <div class="day-header" cdkDragHandle>
             <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
           </div>
           <div class="day-card-indicators" *ngIf="getMealIdForDay(index) as mealId">

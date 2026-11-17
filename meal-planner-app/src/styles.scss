@@ -68,12 +68,19 @@ body {
 	min-height: 170px;
 }
 
+.weekly-plan-page .week-plan-grid,
+.this-week-page .week-plan-grid {
+	grid-auto-rows: 1fr;
+	align-items: stretch;
+}
+
 .weekly-plan-page .day-slot {
 	position: relative;
 	display: grid;
 	grid-template-areas: "tile";
 	min-width: 0;
-	border: 2px solid transparent;
+	box-sizing: border-box;
+	border: 3px solid transparent;
 	border-radius: 14px;
 	transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
 }
@@ -82,6 +89,9 @@ body {
 	position: relative;
 	display: grid;
 	grid-template-areas: "tile";
+	box-sizing: border-box;
+	border: 3px solid transparent;
+	border-radius: 14px;
 }
 
 .weekly-plan-page .day-slot > .day-card,
@@ -111,14 +121,6 @@ body {
 
 .weekly-plan-page .day-card {
 	min-height: 170px;
-}
-
-.weekly-plan-page .day-card.cdk-drag {
-	cursor: grab;
-}
-
-.weekly-plan-page .day-card.cdk-drag:active {
-	cursor: grabbing;
 }
 
 .weekly-plan-page .day-slot.has-choice .day-card {

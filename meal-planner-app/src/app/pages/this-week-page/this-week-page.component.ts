@@ -5,6 +5,7 @@ import {
   CdkDragDrop,
   CdkDragEnter,
   CdkDragExit,
+  CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ import { MealPlannerService } from '../../meal-planner.service';
 @Component({
   selector: 'app-this-week-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, CdkDropList, CdkDrag],
+  imports: [CommonModule, RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './this-week-page.component.html',
   styleUrl: './this-week-page.component.scss',
 })

@@ -126,6 +126,14 @@ h2 {
   border-bottom: 1px solid #dfe8f4;
 }
 
+.day-header[cdkDragHandle] {
+  cursor: grab;
+}
+
+.day-header[cdkDragHandle]:active {
+  cursor: grabbing;
+}
+
 .day-header strong {
   color: #667386;
   font-size: 0.78rem;
@@ -240,11 +248,21 @@ h2 {
 
   .day-card {
     gap: 12px;
-    padding: 18px 16px;
+    padding: 16px;
   }
 
   .day-header {
+    position: relative;
+    min-height: 52px;
+    padding-right: 100px;
     padding-bottom: 12px;
+  }
+
+  .day-card-indicators {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    margin-top: 0;
   }
 
   .day-header strong {

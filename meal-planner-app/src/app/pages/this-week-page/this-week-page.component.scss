@@ -49,17 +49,19 @@ h2 {
 
 .day-slot {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-areas: "tile";
+  box-sizing: border-box;
   min-width: 0;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 116px;
-  padding: 14px 12px 12px;
-  border: 1px solid #dfe8f4;
-  border-radius: 12px;
+  border: 3px solid transparent;
+  border-radius: 14px;
   background: #f6f8ff;
   color: inherit;
   text-decoration: none;
+}
+
+.day-slot > .day-card {
+  grid-area: tile;
 }
 
 .day-card {
@@ -72,14 +74,6 @@ h2 {
   padding: 14px 12px 12px;
   color: inherit;
   text-decoration: none;
-}
-
-.day-card.cdk-drag {
-  cursor: grab;
-}
-
-.day-card.cdk-drag:active {
-  cursor: grabbing;
 }
 
 .day-card.clickable {
@@ -111,6 +105,14 @@ h2 {
   flex-direction: column;
   padding: 0 0 9px;
   border-bottom: 1px solid #dfe8f4;
+}
+
+.day-header[cdkDragHandle] {
+  cursor: grab;
+}
+
+.day-header[cdkDragHandle]:active {
+  cursor: grabbing;
 }
 
 .day-header strong {
@@ -215,7 +217,7 @@ h2 {
 }
 
 .day-slot.current-day {
-  border: 2px solid #b65e2e;
+  border-color: #b65e2e;
   background-color: #fff8f1;
 }
 
@@ -227,7 +229,6 @@ h2 {
 
   .day-slot {
     min-height: 0;
-    padding: 8px;
   }
 
   .day-card {
@@ -236,7 +237,17 @@ h2 {
   }
 
   .day-header {
+    position: relative;
+    min-height: 52px;
+    padding-right: 100px;
     padding-bottom: 12px;
+  }
+
+  .day-card-indicators {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    margin-top: 0;
   }
 
   .day-header strong {

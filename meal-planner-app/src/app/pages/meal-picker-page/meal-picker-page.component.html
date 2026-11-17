@@ -1,13 +1,13 @@
 <div class="page-shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb">
-    <a routerLink="/plan-next-week">Plan Next Week</a>
+    <a [routerLink]="planUrl">{{ isThisWeek ? 'This Week' : 'Plan Next Week' }}</a>
     <span aria-hidden="true">/</span>
     <span aria-current="page">Choose for {{ dayLabel }}</span>
   </nav>
 
   <header class="topbar">
     <div>
-      <p class="eyebrow">Plan Next Week</p>
+      <p class="eyebrow">{{ isThisWeek ? 'This Week' : 'Plan Next Week' }}</p>
       <h1>Choose a meal for {{ dayLabel }}</h1>
     </div>
   </header>

@@ -524,6 +524,56 @@ export class MealPlannerService {
     this.persistAppState();
   }
 
+  setThisWeekPlanMeal(dayIndex: number, mealId: string | null): void {
+    if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
+      return;
+    }
+
+    if (mealId && !this.meals.some((meal) => meal.id === mealId)) {
+      return;
+    }
+
+    const currentPlan = this.thisWeekPlan;
+    if (!currentPlan && !mealId) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const plan: WeeklyPlan = currentPlan ?? {
+      id: this.makeId(),
+      weekStart: this.currentWeekStart(),
+      mealIds: Array(7).fill(null),
+      generatedAt: now,
+    };
+    const previousMealId = plan.mealIds[dayIndex] ?? null;
+    if (previousMealId === mealId) {
+      return;
+    }
+
+    const mealIds = [...plan.mealIds];
+    mealIds[dayIndex] = mealId;
+    if (currentPlan) {
+      this.plans = this.plans.map((savedPlan) =>
+        savedPlan.id === plan.id ? { ...savedPlan, mealIds } : savedPlan,
+      );
+    } else {
+      this.plans = [{ ...plan, mealIds }, ...this.plans];
+    }
+
+    const previousMeal = this.meals.find((meal) => meal.id === previousMealId);
+    if (previousMeal && !mealIds.includes(previousMealId)) {
+      previousMeal.timesUsed = Math.max(0, previousMeal.timesUsed - 1);
+      previousMeal.updatedAt = now;
+    }
+    const nextMeal = this.meals.find((meal) => meal.id === mealId);
+    if (nextMeal && !currentPlan?.mealIds.includes(mealId)) {
+      nextMeal.timesUsed += 1;
+      nextMeal.updatedAt = now;
+    }
+
+    this.persistAppState();
+  }
+
   clearDraftPlanMeal(dayIndex: number): void {
     if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
       return;

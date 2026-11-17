@@ -29,22 +29,19 @@
         [class.has-choice]="!!getMealIdForDay(index)"
         [class.current-day]="isToday(index)"
       >
-        <a
-          *ngIf="getMealIdForDay(index) as mealId; else unplannedDay"
-          class="day-card clickable"
+        <div
+          class="day-card"
           cdkDrag
           cdkDragPreviewClass="weekly-plan-drag-preview"
-          [cdkDragData]="mealId"
+          [cdkDragData]="getMealIdForDay(index)"
+          [cdkDragDisabled]="!getMealIdForDay(index)"
           (cdkDragStarted)="onMealDragStarted()"
           (cdkDragEnded)="onMealDragEnded()"
-          [routerLink]="['/meals', mealId]"
-          [queryParams]="{ from: 'this-week' }"
-          [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
         >
           <div class="day-header">
             <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
           </div>
-          <div class="day-card-indicators">
+          <div class="day-card-indicators" *ngIf="getMealIdForDay(index) as mealId">
             <span
               *ngIf="mealPlanner.isVegetarianMeal(mealId)"
               class="vegetarian-mark"
@@ -64,22 +61,34 @@
             </ng-container>
           </div>
           <div class="day-meal">
-            <span class="selected-meal-name">
+            <a
+              *ngIf="getMealIdForDay(index) as mealId; else unplannedDay"
+              class="selected-meal-name"
+              [routerLink]="['/meals', mealId]"
+              [queryParams]="{ from: 'this-week' }"
+              [attr.aria-label]="'View ' + mealPlanner.getMealNameById(mealId) + ' details for ' + day"
+            >
               {{ mealPlanner.getMealNameById(mealId) }}
-            </span>
-          </div>
-        </a>
-
-        <ng-template #unplannedDay>
-          <article class="day-card">
-            <div class="day-header">
-              <strong>{{ day }}, {{ getDayDate(index) | date: 'd MMM' }}</strong>
-            </div>
-            <div class="day-meal">
+            </a>
+            <ng-template #unplannedDay>
               <span class="empty-choice">Not planned</span>
-            </div>
-          </article>
-        </ng-template>
+            </ng-template>
+          </div>
+          <div class="day-actions">
+            <a class="choose-action" [routerLink]="['/this-week', index, 'choose']">
+              {{ getMealIdForDay(index) ? 'Change' : 'Choose' }}
+            </a>
+            <button
+              *ngIf="getMealIdForDay(index)"
+              class="clear-choice-action"
+              type="button"
+              [attr.aria-label]="'Remove ' + day + ' meal'"
+              (click)="clearMealChoice(index)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
         <span *ngIf="activeDropIndex === index" class="drop-target-label">Drop here</span>
       </div>
     </div>

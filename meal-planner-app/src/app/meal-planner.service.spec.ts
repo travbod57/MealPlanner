@@ -152,6 +152,119 @@ describe('MealPlannerService randomizePlan', () => {
     ).toEqual(expectedMealIds);
   });
 
+  it('changes one This Week meal and updates both usage counts', () => {
+    const originalMeal = service.meals[0];
+    const replacementMeal = service.meals[1];
+    originalMeal.timesUsed = 4;
+    replacementMeal.timesUsed = 2;
+    const mealIds = [
+      originalMeal.id,
+      service.meals[2].id,
+      service.meals[3].id,
+      null,
+      null,
+      null,
+      null,
+    ];
+    service.plans = [
+      {
+        id: 'current-plan',
+        weekStart: service.currentWeekStart(),
+        mealIds,
+        generatedAt: '2026-10-01T12:00:00.000Z',
+      },
+    ];
+
+    service.setThisWeekPlanMeal(0, replacementMeal.id);
+
+    expect(service.thisWeekPlan?.mealIds).toEqual([
+      replacementMeal.id,
+      ...mealIds.slice(1),
+    ]);
+    expect(originalMeal.timesUsed).toBe(3);
+    expect(replacementMeal.timesUsed).toBe(3);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-plans') ?? '[]')[0]
+        .mealIds,
+    ).toEqual(service.thisWeekPlan?.mealIds);
+    expect(
+      JSON.parse(localStorage.getItem('meal-planner-meals') ?? '[]').map(
+        (meal: Meal) => meal.timesUsed,
+      ),
+    ).toEqual(service.meals.map((meal) => meal.timesUsed));
+  });
+
+  it('removes one This Week meal and decrements its usage count', () => {
+    const removedMeal = service.meals[0];
+    removedMeal.timesUsed = 1;
+    service.plans = [
+      {
+        id: 'current-plan',
+        weekStart: service.currentWeekStart(),
+        mealIds: [
+          removedMeal.id,
+          service.meals[1].id,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ],
+        generatedAt: '2026-10-01T12:00:00.000Z',
+      },
+    ];
+
+    service.setThisWeekPlanMeal(0, null);
+
+    expect(service.thisWeekPlan?.mealIds[0]).toBeNull();
+    expect(service.thisWeekPlan?.mealIds[1]).toBe(service.meals[1].id);
+    expect(removedMeal.timesUsed).toBe(0);
+  });
+
+  it('creates a This Week plan when choosing a meal before a plan exists', () => {
+    const chosenMeal = service.meals[0];
+
+    service.setThisWeekPlanMeal(2, chosenMeal.id);
+
+    expect(service.thisWeekPlan?.mealIds).toEqual([
+      null,
+      null,
+      chosenMeal.id,
+      null,
+      null,
+      null,
+      null,
+    ]);
+    expect(chosenMeal.timesUsed).toBe(1);
+  });
+
+  it('keeps usage counts when a meal remains elsewhere in This Week', () => {
+    const repeatedMeal = service.meals[0];
+    const replacementMeal = service.meals[1];
+    repeatedMeal.timesUsed = 1;
+    service.plans = [
+      {
+        id: 'current-plan',
+        weekStart: service.currentWeekStart(),
+        mealIds: [
+          repeatedMeal.id,
+          repeatedMeal.id,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ],
+        generatedAt: '2026-10-01T12:00:00.000Z',
+      },
+    ];
+
+    service.setThisWeekPlanMeal(0, replacementMeal.id);
+
+    expect(repeatedMeal.timesUsed).toBe(1);
+    expect(replacementMeal.timesUsed).toBe(1);
+  });
+
   it('restores meals, plans, settings, and the draft after a reload', () => {
     const mealId = service.meals[0].id;
     service.setDraftPlanMeal(2, mealId);

@@ -153,6 +153,51 @@ h2 {
   font-size: 0.85rem;
 }
 
+.day-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.choose-action,
+.clear-choice-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.choose-action {
+  background: #dcefe1;
+  color: #28613c;
+  text-decoration: none;
+}
+
+.choose-action:hover,
+.choose-action:focus-visible {
+  background: #cce5d3;
+}
+
+.clear-choice-action {
+  border: 1px solid #c7cbd0;
+  background: #e8e8eb;
+  color: #39434d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clear-choice-action:hover,
+.clear-choice-action:focus-visible {
+  background: #d9dadd;
+}
+
 .day-slot.clickable {
   cursor: pointer;
   transition: border-color 120ms ease, background-color 120ms ease;

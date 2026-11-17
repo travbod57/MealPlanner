@@ -31,6 +31,10 @@ export class ThisWeekPageComponent {
     return this.mealPlanner.thisWeekPlan?.mealIds[index] ?? null;
   }
 
+  clearMealChoice(dayIndex: number): void {
+    this.mealPlanner.setThisWeekPlanMeal(dayIndex, null);
+  }
+
   getDayDate(index: number): Date {
     return this.mealPlanner.getWeekDayDate(0, index);
   }

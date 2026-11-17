@@ -18,6 +18,12 @@ export const routes: Routes = [
     component: MealPickerPageComponent,
     title: 'Choose a Meal | whats4dinnerDF',
   },
+  {
+    path: 'this-week/:dayIndex/choose',
+    component: MealPickerPageComponent,
+    title: 'Choose a Meal | whats4dinnerDF',
+    data: { planType: 'this-week' },
+  },
   { path: 'meals', component: MealLibraryPageComponent, title: 'Saved Meals | whats4dinnerDF' },
   { path: 'meals/new', component: MealFormPageComponent, title: 'Add a Meal | whats4dinnerDF' },
   { path: 'meals/:id/edit', component: MealFormPageComponent, title: 'Edit Meal | whats4dinnerDF' },

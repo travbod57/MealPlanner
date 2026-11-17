@@ -28,6 +28,7 @@ export class MealPickerPageComponent implements OnInit {
   dayIndex = -1;
   searchTerm = '';
   sortOrder: MealSortOrder = 'name-asc';
+  isThisWeek = false;
 
   get filteredMeals(): Meal[] {
     const query = this.searchTerm.trim().toLocaleLowerCase();
@@ -58,10 +59,15 @@ export class MealPickerPageComponent implements OnInit {
     return this.mealPlanner.DAY_LABELS[this.dayIndex] ?? '';
   }
 
+  get planUrl(): string {
+    return this.isThisWeek ? '/this-week' : '/plan-next-week';
+  }
+
   ngOnInit(): void {
+    this.isThisWeek = this.route.snapshot.data['planType'] === 'this-week';
     const dayIndex = Number(this.route.snapshot.paramMap.get('dayIndex'));
     if (!Number.isInteger(dayIndex) || dayIndex < 0 || dayIndex >= 7) {
-      void this.router.navigateByUrl('/plan-next-week');
+      void this.router.navigateByUrl(this.planUrl);
       return;
     }
 
@@ -69,7 +75,11 @@ export class MealPickerPageComponent implements OnInit {
   }
 
   selectMeal(mealId: string): void {
-    this.mealPlanner.setDraftPlanMeal(this.dayIndex, mealId);
-    void this.router.navigateByUrl('/plan-next-week');
+    if (this.isThisWeek) {
+      this.mealPlanner.setThisWeekPlanMeal(this.dayIndex, mealId);
+    } else {
+      this.mealPlanner.setDraftPlanMeal(this.dayIndex, mealId);
+    }
+    void this.router.navigateByUrl(this.planUrl);
   }
 }

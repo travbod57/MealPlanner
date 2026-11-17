@@ -152,18 +152,6 @@
     </div>
   </section>
 
-  <section class="panel" *ngIf="mealPlanner.thisWeekPlan">
-    <h2>This week's plan</h2>
-    <div class="week-plan-grid preview">
-      <div class="day-slot" *ngFor="let day of mealPlanner.DAY_LABELS; let index = index">
-        <div class="day-header">
-          <strong>{{ day }}</strong>
-        </div>
-        <p>{{ getMealNameById(mealPlanner.thisWeekPlan.mealIds[index]) }}</p>
-      </div>
-    </div>
-  </section>
-
   <section class="panel" *ngIf="mealPlanner.historyPlans.length">
     <h2>History</h2>
     <div class="history-list">

@@ -21,6 +21,7 @@ import { MealPlannerService } from '../../meal-planner.service';
 })
 export class WeeklyPlanPageComponent {
   readonly mealPlanner = inject(MealPlannerService);
+  readonly dragStartDelay = { mouse: 0, touch: 500 };
   readonly dayDropListIds = Array.from(
     { length: 7 },
     (_, index) => `plan-day-${index}`,

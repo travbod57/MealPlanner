@@ -33,6 +33,7 @@
         <div
           class="day-card"
           cdkDrag
+          [cdkDragStartDelay]="dragStartDelay"
           cdkDragPreviewClass="weekly-plan-drag-preview"
           [cdkDragData]="getMealIdForDay(index)"
           [cdkDragDisabled]="!getMealIdForDay(index)"

@@ -134,6 +134,18 @@ h2 {
   cursor: grabbing;
 }
 
+:host .day-slot.drop-target {
+  border-color: #a985df;
+  border-style: dashed;
+  background: rgba(122, 76, 199, 0.08);
+}
+
+:host .day-slot.active-drop-target {
+  border: 3px solid #5c2fa5;
+  background: #ede2ff;
+  box-shadow: 0 0 0 3px rgba(122, 76, 199, 0.2);
+}
+
 .day-header strong {
   color: #667386;
   font-size: 0.78rem;
@@ -256,6 +268,7 @@ h2 {
     min-height: 52px;
     padding-right: 100px;
     padding-bottom: 12px;
+    touch-action: pan-y !important;
   }
 
   .day-card-indicators {

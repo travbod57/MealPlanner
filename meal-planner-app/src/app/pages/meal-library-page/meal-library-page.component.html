@@ -2,13 +2,19 @@
   <header class="topbar">
     <div>
       <p class="eyebrow">Meal library</p>
-      <h1>Saved meals</h1>
+      <h1>
+        Saved meals
+        <span class="meal-count" [attr.aria-label]="filteredMeals.length + ' meals displayed'">
+          {{ filteredMeals.length }}
+        </span>
+      </h1>
     </div>
-    <a class="primary-button" routerLink="/meals/new">Add meal</a>
+    <a class="primary-button topbar-add-button" routerLink="/meals/new">Add meal</a>
   </header>
 
   <section class="panel">
     <div class="meal-controls">
+      <a class="primary-button mobile-add-button" routerLink="/meals/new">Add meal</a>
       <label class="meal-search">
         <input
           type="search"
